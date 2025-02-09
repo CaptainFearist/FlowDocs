@@ -4,7 +4,9 @@
         Title="Администрирование"
         WindowStartupLocation="CenterScreen"
         Height="600" Width="1000"
-        MinHeight="460" MinWidth="720">
+        MinHeight="460" MinWidth="720"
+        Icon="Images/FlowDocs.ico">
+    
     <Grid Background="#cbce86">
         <Grid>
             <Grid.ColumnDefinitions>

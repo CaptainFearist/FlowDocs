@@ -4,7 +4,9 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         Title="Добавление пользователя"
-        Height="450" Width="365">
+        Height="450" Width="365"
+        Icon="Images/FlowDocs.ico">
+    
     <Grid Background="#cbce86">
         <StackPanel Margin="10">
             <TextBlock Text="Имя:" 

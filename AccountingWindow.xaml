@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Бухгалтерия"
         WindowStartupLocation="CenterScreen"
-        Height="600" Width="1000">
+        Height="600" Width="1000"
+        Icon="Images/FlowDocs.ico">
 
     <Grid Background="#cbce86">
         <Grid.ColumnDefinitions>

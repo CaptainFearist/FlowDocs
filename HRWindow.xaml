@@ -7,7 +7,9 @@
         mc:Ignorable="d"
         Title="HRWindow" 
         WindowStartupLocation="CenterScreen"
-        Height="600" Width="1000">
+        Height="600" Width="1000"
+        Icon="Images/FlowDocs.ico">
+    
     <Grid Background="#cbce86">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" MinWidth="195"/>
