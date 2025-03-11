@@ -4,10 +4,10 @@
         Title="Администрирование"
         WindowStartupLocation="CenterScreen"
         Height="600" Width="1000"
-        MinHeight="460" MinWidth="720"
+        MinHeight="520" MinWidth="820"
         Icon="Images/FlowDocs.ico">
-    
-    <Grid Background="#cbce86">
+
+    <Grid Background="#F5EFE6">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="190"/>
@@ -21,39 +21,39 @@
             </Grid.RowDefinitions>
 
             <Border Grid.Row="0" Grid.ColumnSpan="2" 
-                    Background="#b7ba72" 
+                    Background="#DAD7CD" 
                     Height="50">
                 
                 <StackPanel Orientation="Horizontal" 
                             HorizontalAlignment="Right" VerticalAlignment="Center" 
                             Margin="10,0">
                     <TextBlock x:Name="AdminNameTextBlock" 
-                               FontSize="16" Foreground="Black" />
+                               FontSize="16" Foreground="#2D3142" />
                 </StackPanel>
             </Border>
 
             <Border Grid.Row="2" Grid.ColumnSpan="2" 
-                    Background="#b7ba72"
+                    Background="#DAD7CD"
                     Height="50"/>
 
-            <StackPanel Grid.Column="0" Grid.Row="1" Margin="5,10,5,10">
+            <StackPanel Grid.Column="0" Grid.Row="1" Margin="5,10,0,10">
                 <Button x:Name="AddUserButton" 
                         Content="Добавить сотрудника" 
                         Margin="5"
-                        Width="168" Height="50"
+                        Width="175" Height="50"
                         FontSize="16"
                         Click="AddUserButton_Click"
                         Style="{StaticResource MenuButton}"
-                        Foreground="Black"/>
+                        Foreground="#2D3142"/>
 
                 <Button x:Name="ViewAllUsersButton" 
                         Content="Сотрудники" 
                         Margin="5"
-                        Width="168" Height="50"
+                        Width="175" Height="50"
                         FontSize="16"
                         Click="ViewAllUsersButton_Click"
                         Style="{StaticResource MenuButton}"
-                        Foreground="Black"/>
+                        Foreground="#2D3142"/>
             </StackPanel>
 
             <UniformGrid x:Name="DepartmentsPanel" 

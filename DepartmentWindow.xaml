@@ -3,10 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Файлы отделов"
         WindowStartupLocation="CenterScreen"
-        Height="600" Width="1000"
+        Height="625" Width="1000"
+        MinWidth="970" MinHeight="625"
         Icon="Images/FlowDocs.ico">
 
-    <Grid Background="#cbce86">
+    <Grid Background="#F5EFE6">
         <StackPanel Margin="10">
 
             <Grid Margin="0,0,0,10">

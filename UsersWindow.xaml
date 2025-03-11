@@ -4,9 +4,10 @@
         Title="Список сотрудников" 
         WindowStartupLocation="CenterScreen"
         Height="600" Width="800"
+        MinWidth="590" MinHeight="400"
         Icon="Images/FlowDocs.ico">
 
-    <Grid Background="#cbce86">
+    <Grid Background="#F5EFE6">
         <StackPanel Margin="10">
 
             <Grid Margin="0,0,0,10">

@@ -7,10 +7,11 @@
         mc:Ignorable="d"
         Title="ProductManagersWindow" 
         WindowStartupLocation="CenterScreen"
-        Height="600" Width="1000"
+        Height="625" Width="1000"
+        MinWidth="970" MinHeight="625"
         Icon="Images/FlowDocs.ico">
-    
-    <Grid Background="#cbce86">
+
+    <Grid Background="#F5EFE6">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" MinWidth="195"/>
             <ColumnDefinition Width="5"/>
@@ -24,7 +25,7 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0" Grid.ColumnSpan="3"
-            Background="#b7ba72"
+            Background="#DAD7CD"
             Height="40">
             <StackPanel Orientation="Horizontal" 
                         HorizontalAlignment="Right" VerticalAlignment="Center" 
@@ -36,7 +37,7 @@
         </Border>
 
         <Border Grid.Row="2" Grid.ColumnSpan="3" 
-            Background="#b7ba72" 
+            Background="#DAD7CD" 
             Height="40"/>
 
         <StackPanel Grid.Row="1" Grid.Column="0" 

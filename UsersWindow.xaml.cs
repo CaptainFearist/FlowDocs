@@ -19,7 +19,7 @@ namespace File_Manager
             InitializeComponent();
 
             var options = new DbContextOptionsBuilder<IT_DepartmentsContext>()
-                            .UseSqlServer("Data Source=HoneyPot\\FEARIST;" +
+                            .UseSqlServer("Data Source=HoneyPot\\SQLEXPRESS;" +
                                          "Initial Catalog=IT_Departments;Integrated Security=True;MultipleActiveResultSets=True;" +
                                          "TrustServerCertificate=True")
                             .Options;

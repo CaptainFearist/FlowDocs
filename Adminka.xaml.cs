@@ -18,7 +18,7 @@ namespace File_Manager
             AdminNameTextBlock.Text = $"{firstName} {lastName}";
 
             var optionsBuilder = new DbContextOptionsBuilder<IT_DepartmentsContext>();
-            optionsBuilder.UseSqlServer("Data Source=HoneyPot\\FEARIST;" +
+            optionsBuilder.UseSqlServer("Data Source=HoneyPot\\SQLEXPRESS;" +
                                          "Initial Catalog=IT_Departments;Integrated Security=True;MultipleActiveResultSets=True;" +
                                          "TrustServerCertificate=True");
 
@@ -36,43 +36,50 @@ namespace File_Manager
             {
                 var departmentButton = new Button
                 {
-                    Width = 235,
-                    Height = 50,
                     Tag = department.DepartmentId,
                     Margin = new Thickness(5),
-                    Style = (Style)FindResource("DepartmentButton")
+                    Style = (Style)FindResource("DepartmentButton"),
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment = VerticalAlignment.Stretch,
+                    MaxWidth = 650,
+                    MaxHeight = 130
                 };
+
+                var grid = new Grid();
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+                double buttonHeight = departmentButton.MaxHeight;
 
                 var icon = new Image
                 {
-                    Source = new BitmapImage(new Uri(imagePath)),
-                    Width = 30,
-                    Height = 30,
-                    Margin = new Thickness(5, 0, 5, 0)
+                    Source = new BitmapImage(new Uri(imagePath, UriKind.Absolute)),
+                    Width = Math.Min(buttonHeight * 0.4, 70),  // 40% от высоты кнопки, но не более 70px
+                    Height = Math.Min(buttonHeight * 0.4, 70),
+                    Margin = new Thickness(10)
                 };
 
                 var departmentTextBlock = new TextBlock
                 {
                     Text = department.DepartmentName,
-                    FontSize = 14,
-                    VerticalAlignment = VerticalAlignment.Center
+                    FontSize = Math.Min(buttonHeight * 0.15, 24), // 15% от высоты кнопки, но не более 24px
+                    VerticalAlignment = VerticalAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap
                 };
 
-                var stackPanel = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal,
-                    VerticalAlignment = VerticalAlignment.Center
-                };
+                Grid.SetColumn(icon, 0);
+                Grid.SetColumn(departmentTextBlock, 1);
 
-                stackPanel.Children.Add(icon);
-                stackPanel.Children.Add(departmentTextBlock);
+                grid.Children.Add(icon);
+                grid.Children.Add(departmentTextBlock);
 
-                departmentButton.Content = stackPanel;
+                departmentButton.Content = grid;
                 departmentButton.Click += DepartmentButton_Click;
 
                 DepartmentsPanel.Children.Add(departmentButton);
             }
         }
+
 
         private void DepartmentButton_Click(object sender, RoutedEventArgs e)
         {
@@ -87,7 +94,7 @@ namespace File_Manager
                 }
 
                 var optionsBuilder = new DbContextOptionsBuilder<IT_DepartmentsContext>();
-                optionsBuilder.UseSqlServer("Data Source=HoneyPot\\FEARIST;" +
+                optionsBuilder.UseSqlServer("Data Source=HoneyPot\\SQLEXPRESS;" +
                                             "Initial Catalog=IT_Departments;Integrated Security=True;MultipleActiveResultSets=True;" +
                                             "TrustServerCertificate=True");
 
@@ -103,7 +110,7 @@ namespace File_Manager
             if (sender is TextBlock textBlock && textBlock.Tag is int departmentId)
             {
                 var optionsBuilder = new DbContextOptionsBuilder<IT_DepartmentsContext>();
-                optionsBuilder.UseSqlServer("Data Source=HoneyPot\\FEARIST;" +
+                optionsBuilder.UseSqlServer("Data Source=HoneyPot\\SQLEXPRESS;" +
                                             "Initial Catalog=IT_Departments;Integrated Security=True;MultipleActiveResultSets=True;" +
                                             "TrustServerCertificate=True");
 

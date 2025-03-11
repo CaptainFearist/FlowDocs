@@ -6,8 +6,8 @@
         Title="Добавление пользователя"
         Height="450" Width="365"
         Icon="Images/FlowDocs.ico">
-    
-    <Grid Background="#cbce86">
+
+    <Grid Background="#F5EFE6">
         <StackPanel Margin="10">
             <TextBlock Text="Имя:" 
                        FontFamily="Tahoma"/>

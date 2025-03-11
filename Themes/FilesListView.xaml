@@ -1,45 +1,45 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <SolidColorBrush x:Key="ListView.Background" Color="#eee8aa"/>
-    <SolidColorBrush x:Key="ListView.Header.Background" Color="#a8b461"/>
-    <SolidColorBrush x:Key="ListView.AlternatingRow.Background" Color="#f5f0d5"/>
-    <SolidColorBrush x:Key="ListView.Border" Color="#b5a76d"/>
+    <SolidColorBrush x:Key="ListView.Background" Color="#E1D8C2"/>
+    <SolidColorBrush x:Key="ListView.Header.Background" Color="#DAD7CD"/>
+    <SolidColorBrush x:Key="ListView.AlternatingRow.Background" Color="#A3B18A"/>
+    <SolidColorBrush x:Key="ListView.Border" Color="#588157"/>
 
     <Style TargetType="{x:Type GridViewColumnHeader}">
         <Setter Property="Background" Value="{StaticResource ListView.Header.Background}"/>
-        <Setter Property="Foreground" Value="Black"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="IsEnabled" Value="False"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="Padding" Value="5"/>
         <Setter Property="BorderBrush" Value="{StaticResource ListView.Border}"/>
         <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="Foreground" Value="#2D3142"/>
     </Style>
 
     <Style TargetType="ListViewItem">
         <Setter Property="Background" Value="{StaticResource ListView.Background}"/>
-        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="Foreground" Value="#2D3142"/>
         <Setter Property="Padding" Value="5,2"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="BorderBrush" Value="{StaticResource ListView.Border}"/>
         <Setter Property="BorderThickness" Value="0,0,0,1"/>
 
-        <!-- Чередование строк -->
         <Style.Triggers>
             <Trigger Property="ItemsControl.AlternationIndex" Value="1">
                 <Setter Property="Background" Value="{StaticResource ListView.AlternatingRow.Background}"/>
             </Trigger>
-            
+
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#d0c17a"/>
+                <Setter Property="Background" Value="#8F9779"/>
             </Trigger>
-            
+
             <Trigger Property="IsSelected" Value="True">
-                <Setter Property="Background" Value="#c7b56b"/>
-                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Background" Value="#6A8D73"/>
+                <Setter Property="Foreground" Value="#2D3142"/>
             </Trigger>
         </Style.Triggers>
     </Style>
+
 </ResourceDictionary>

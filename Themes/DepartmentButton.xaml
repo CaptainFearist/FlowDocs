@@ -1,10 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <SolidColorBrush x:Key="DepartmentButton.MouseOver.Background" Color="#a8b461"/>
-    <SolidColorBrush x:Key="DepartmentButton.Pressed.Background" Color="#86993d"/>
-    <SolidColorBrush x:Key="DepartmentButton.Default.Background" Color="#b7ba72"/>
-    <SolidColorBrush x:Key="DepartmentButton.Foreground" Color="Black"/>
+    <SolidColorBrush x:Key="DepartmentButton.MouseOver.Background" Color="#7A8E63"/>
+    <SolidColorBrush x:Key="DepartmentButton.Pressed.Background" Color="#6A7C53"/>
+    <SolidColorBrush x:Key="DepartmentButton.Default.Background" Color="#8C9E6F"/>
+    <SolidColorBrush x:Key="DepartmentButton.Foreground" Color="#2D3142"/>
 
     <Style x:Key="DepartmentButton" TargetType="Button">
         <Setter Property="Template">
@@ -25,7 +25,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        
+
         <Setter Property="Background" Value="{StaticResource DepartmentButton.Default.Background}"/>
         <Setter Property="Foreground" Value="{StaticResource DepartmentButton.Foreground}"/>
         <Setter Property="FontSize" Value="14"/>

@@ -27,7 +27,7 @@ public partial class IT_DepartmentsContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Data Source=HoneyPot\\FEARIST;" +
+            optionsBuilder.UseSqlServer("Data Source=HoneyPot\\SQLEXPRESS;" +
             "Initial Catalog=IT_Departments;Integrated Security=True;MultipleActiveResultSets=True;" +
             "TrustServerCertificate=True");
         }
