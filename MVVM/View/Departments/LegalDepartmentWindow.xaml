@@ -1,15 +1,15 @@
-﻿<Window x:Class="File_Manager.DesignWindow"
+﻿<Window x:Class="File_Manager.LegalDepartmentWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:File_Manager"
         mc:Ignorable="d"
-        Title="DesignWindow" 
+        Title="Юридический отдел"
         WindowStartupLocation="CenterScreen"
         Height="625" Width="1000"
         MinWidth="970" MinHeight="625"
-        Icon="Images/FlowDocs.ico">
+        Icon="/Images/FlowDocs.ico">
 
     <Grid Background="#F5EFE6">
         <Grid.ColumnDefinitions>
@@ -37,11 +37,11 @@
         </Border>
 
         <Border Grid.Row="2" Grid.ColumnSpan="3" 
-                Background="#DAD7CD" 
-                Height="40"/>
+            Background="#DAD7CD" 
+            Height="40"/>
 
         <StackPanel Grid.Row="1" Grid.Column="0" 
-                    Margin="5">
+                Margin="5">
 
             <Button x:Name="ContactButton" 
                     Content="Связь с командой" 
@@ -62,7 +62,7 @@
                       IsEnabled="False"/>
 
         <ScrollViewer Grid.Row="1" Grid.Column="2" 
-                      Margin="5">
+                  Margin="5">
 
             <UniformGrid x:Name="DepartmentsPanel" 
                      Columns="1" 
@@ -81,10 +81,10 @@
                                 <ColumnDefinition Width="228" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="Дизайн" 
+                            <TextBlock Text="Юридический" 
                                    FontSize="20" 
                                    FontWeight="Bold" 
-                                   Margin="0,0,17,0" 
+                                   Margin="0,0,15,0" 
                                    VerticalAlignment="Center" Height="27"/>
 
                             <TextBox x:Name="SearchBox"
@@ -155,7 +155,6 @@
                                 </GridView>
                             </ListView.View>
                         </ListView>
-
                     </StackPanel>
                 </Border>
             </UniformGrid>

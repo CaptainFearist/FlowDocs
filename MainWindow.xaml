@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         Title="FlowDocs" Height="410" Width="400"
-        Icon="Images/FlowDocs.ico">
+        Icon="/Images/FlowDocs.ico">
 
     <Grid Background="#F5EFE6">
         <StackPanel Margin="0,10,0,278">

@@ -5,7 +5,7 @@
         ResizeMode="NoResize"
         Title="Добавление пользователя"
         Height="450" Width="365"
-        Icon="Images/FlowDocs.ico">
+        Icon="/Images/FlowDocs.ico">
 
     <Grid Background="#F5EFE6">
         <StackPanel Margin="10">
