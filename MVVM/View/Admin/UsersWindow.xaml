@@ -56,8 +56,9 @@
 
             <ListView x:Name="UsersListView"
                       ItemsSource="{Binding Users}"
+                      Background="{StaticResource ListView.Background}"
+                      Height="350"
                       MouseDoubleClick="UsersListView_MouseDoubleClick"
-                      Background="{StaticResource ListView.Background}" 
                       AlternationCount="2">
                 <ListView.View>
                     <GridView>
