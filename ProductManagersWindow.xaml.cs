@@ -269,5 +269,68 @@ namespace File_Manager
                 SearchHint.Visibility = Visibility.Visible;
             }
         }
+
+        private void FilesListView_PreviewDragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Copy;
+                e.Handled = true;
+            }
+        }
+
+        private void FilesListView_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Copy;
+                e.Handled = true;
+            }
+        }
+
+        private async void FilesListView_PreviewDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                foreach (string filePath in files)
+                {
+                    var fileName = System.IO.Path.GetFileName(filePath);
+                    var fileExtension = System.IO.Path.GetExtension(filePath).ToLower();
+                    var uploadDate = DateTime.Now;
+
+                    if (FileTypeMappings.TryGetValue(fileExtension, out int fileTypeId))
+                    {
+                        var newFile = new Entities.File
+                        {
+                            FileName = fileName,
+                            FilePath = filePath,
+                            UploadDate = uploadDate,
+                            FileTypeId = fileTypeId,
+                            UserId = _userId
+                        };
+
+                        _context.Files.Add(newFile);
+                        await _context.SaveChangesAsync();
+
+                        var departmentFile = new DepartmentFile
+                        {
+                            DepartmentId = _departmentId,
+                            FileId = newFile.FileId
+                        };
+
+                        _context.DepartmentFiles.Add(departmentFile);
+                        await _context.SaveChangesAsync();
+                        await LoadFilesAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Файл {fileName} имеет неподдерживаемый формат!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+
     }
 }

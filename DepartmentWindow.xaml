@@ -71,18 +71,23 @@
                       ItemsSource="{Binding Files}"
                       MouseDoubleClick="FilesListView_MouseDoubleClick"
                       Background="{StaticResource ListView.Background}" 
+                      Height="450"
+                      AllowDrop="True"
+                      DragEnter="FilesListView_DragEnter"
+                      Drop="FilesListView_Drop"
                       AlternationCount="2">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Название файла"
-                                                DisplayMemberBinding="{Binding FileName}"
-                                                Width="360"/>
+                                        DisplayMemberBinding="{Binding FileName}"
+                                        Width="360"/>
                         <GridViewColumn Header="Когда загружен" 
-                                                DisplayMemberBinding="{Binding UploadDate}" 
-                                                Width="300"/>
+                                        DisplayMemberBinding="{Binding UploadDate}" 
+                                        Width="300"/>
                     </GridView>
                 </ListView.View>
             </ListView>
+
         </StackPanel>
     </Grid>
 </Window>
