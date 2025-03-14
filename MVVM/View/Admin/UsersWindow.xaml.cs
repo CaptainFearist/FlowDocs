@@ -179,5 +179,21 @@ namespace File_Manager
                 SearchHint.Visibility = Visibility.Visible;
             }
         }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            double totalWidth = UsersListView.ActualWidth - 25; // Вычитаем небольшие отступы
+            if (totalWidth > 0)
+            {
+                var gridView = UsersListView.View as GridView;
+                if (gridView != null && gridView.Columns.Count == 3)
+                {
+                    double columnWidth = totalWidth / 3; // Делаем все столбцы одинаковыми
+                    gridView.Columns[0].Width = columnWidth;
+                    gridView.Columns[1].Width = columnWidth;
+                    gridView.Columns[2].Width = columnWidth;
+                }
+            }
+        }
     }
 }

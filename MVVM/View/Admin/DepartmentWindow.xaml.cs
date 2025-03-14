@@ -318,5 +318,19 @@ namespace File_Manager
             }
         }
 
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            double totalWidth = FilesListView.ActualWidth - 25; // Вычитаем небольшие отступы
+            if (totalWidth > 0)
+            {
+                var gridView = FilesListView.View as GridView;
+                if (gridView != null && gridView.Columns.Count == 2)
+                {
+                    double columnWidth = totalWidth / 2; // Делаем оба столбца одинаковыми
+                    gridView.Columns[0].Width = columnWidth;
+                    gridView.Columns[1].Width = columnWidth;
+                }
+            }
+        }
     }
 }

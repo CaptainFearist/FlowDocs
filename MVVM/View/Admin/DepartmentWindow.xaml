@@ -5,20 +5,26 @@
         WindowStartupLocation="CenterScreen"
         Height="625" Width="1000"
         MinWidth="970" MinHeight="625"
-        Icon="/Images/FlowDocs.ico">
+        Icon="/Images/FlowDocs.ico"
+        SizeChanged="Window_SizeChanged">
 
     <Grid Background="#F5EFE6">
-        <StackPanel Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
+        <Grid Margin="10" Grid.Row="0">
             <Grid Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="260" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock x:Name="DepartmentNameTextBlock" 
-                           FontSize="20" FontWeight="Bold" 
-                           VerticalAlignment="Center" 
+                <TextBlock x:Name="DepartmentNameTextBlock"
+                           FontSize="20" FontWeight="Bold"
+                           VerticalAlignment="Center"
                            Margin="0,0,10,0"
                            Grid.Column="0"/>
 
@@ -33,61 +39,76 @@
                          TextChanged="SearchBox_TextChanged"
                          GotFocus="Search_GotFocus"
                          LostFocus="Search_LostFocus"/>
-                <TextBlock x:Name="SearchHint" 
-                           Text="Поиск..." 
-                           VerticalAlignment="Center" 
-                           HorizontalAlignment="Left" 
-                           Foreground="Gray" 
-                           IsHitTestVisible="False" 
+                <TextBlock x:Name="SearchHint"
+                           Text="Поиск..."
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"
+                           Foreground="Gray"
+                           IsHitTestVisible="False"
                            Visibility="Visible" Grid.Column="1" Margin="39,0,0,0" />
             </Grid>
+        </Grid>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
-                        Margin="0,0,0,10">
-                
-                <Button x:Name="AddFileButton"
-                        Content="Добавить файл"
-                        Width="120" Height="30"
-                        Margin="0,0,10,0"
-                        Click="AddFileButton_Click"
-                        Style="{StaticResource AddDelete}"/>
-                
-                <Button x:Name="DeleteFileButton"
-                        Content="Удалить файл"
-                        Width="108" Height="30"
-                        Margin="0,0,10,0"
-                        Click="DeleteFileButton_Click"
-                        Style="{StaticResource AddDelete}"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                    Margin="0,0,0,10" Grid.Row="1">
 
-                <Button Content="Скачать файл" 
-                        Width="108" Height="30" 
-                        Margin="0,0,10,0" 
-                        Click="DownloadFileButton_Click" 
-                        Style="{StaticResource AddDelete}"/>
+            <Button x:Name="AddFileButton"
+                    Content="Добавить файл"
+                    Width="120" Height="30"
+                    Margin="0,0,10,0"
+                    Click="AddFileButton_Click"
+                    Style="{StaticResource AddDelete}"/>
 
-            </StackPanel>
+            <Button x:Name="DeleteFileButton"
+                    Content="Удалить файл"
+                    Width="108" Height="30"
+                    Margin="0,0,10,0"
+                    Click="DeleteFileButton_Click"
+                    Style="{StaticResource AddDelete}"/>
 
-            <ListView x:Name="FilesListView"
-                      ItemsSource="{Binding Files}"
-                      MouseDoubleClick="FilesListView_MouseDoubleClick"
-                      Background="{StaticResource ListView.Background}" 
-                      Height="450"
-                      AllowDrop="True"
-                      DragEnter="FilesListView_DragEnter"
-                      Drop="FilesListView_Drop"
-                      AlternationCount="2">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Название файла"
-                                        DisplayMemberBinding="{Binding FileName}"
-                                        Width="360"/>
-                        <GridViewColumn Header="Когда загружен" 
-                                        DisplayMemberBinding="{Binding UploadDate}" 
-                                        Width="300"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+            <Button Content="Скачать файл"
+                    Width="108" Height="30"
+                    Margin="0,0,10,0"
+                    Click="DownloadFileButton_Click"
+                    Style="{StaticResource AddDelete}"/>
 
         </StackPanel>
+
+        <ListView x:Name="FilesListView"
+                  ItemsSource="{Binding Files}"
+                  MouseDoubleClick="FilesListView_MouseDoubleClick"
+                  Background="{StaticResource ListView.Background}"
+                  AllowDrop="True"
+                  DragEnter="FilesListView_DragEnter"
+                  Drop="FilesListView_Drop"
+                  AlternationCount="2"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch"
+                  Grid.Row="2"
+                  Margin="15">
+
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Название файла"
+                                    DisplayMemberBinding="{Binding FileName}"
+                                    Width="360">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontSize="14"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Когда загружен"
+                                    DisplayMemberBinding="{Binding UploadDate}"
+                                    Width="300">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontSize="14"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>
