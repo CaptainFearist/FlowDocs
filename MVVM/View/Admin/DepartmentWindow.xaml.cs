@@ -14,14 +14,16 @@ namespace File_Manager
         private readonly IT_DepartmentsContext _context;
         private readonly int _departmentId;
         private readonly int _userId;
+        public string DepartmentName { get; set; }
 
-        public DepartmentWindow(int departmentId, int userId, IT_DepartmentsContext context)
+        public DepartmentWindow(int departmentId, int userId, IT_DepartmentsContext context, string departmentName)
         {
             _departmentId = departmentId;
             _userId = userId;
             _context = context;
-
+            DepartmentName = departmentName;
             InitializeComponent();
+            DataContext = this;
             LoadDepartmentFiles();
 
             this.Closed += (s, e) => _context.Dispose();

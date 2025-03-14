@@ -100,8 +100,12 @@ namespace File_Manager
 
                 var newContext = new IT_DepartmentsContext(optionsBuilder.Options);
 
-                var departmentWindow = new DepartmentWindow(departmentId, _userId, newContext);
-                departmentWindow.Show();
+                var department = newContext.Departments.Find(departmentId);
+                if (department != null)
+                {
+                    var departmentWindow = new DepartmentWindow(departmentId, _userId, newContext, department.DepartmentName);
+                    departmentWindow.Show();
+                }
             }
         }
 
@@ -116,8 +120,12 @@ namespace File_Manager
 
                 var newContext = new IT_DepartmentsContext(optionsBuilder.Options);
 
-                var departmentWindow = new DepartmentWindow(departmentId, _userId, newContext);
-                departmentWindow.ShowDialog();
+                var department = newContext.Departments.Find(departmentId);
+                if (department != null)
+                {
+                    var departmentWindow = new DepartmentWindow(departmentId, _userId, newContext, department.DepartmentName);
+                    departmentWindow.ShowDialog();
+                }
             }
         }
 
