@@ -17,6 +17,7 @@
                 <ResourceDictionary Source="Themes/FilesListView.xaml"/>
                 <ResourceDictionary Source="Themes/ModernSearch.xaml"/>
                 <ResourceDictionary Source="Themes/DateMinMax.xaml"/>
+                <ResourceDictionary Source="Themes/LogOutBtn.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

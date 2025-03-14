@@ -26,19 +26,31 @@
 
         <Border Grid.Row="0" Grid.ColumnSpan="3"
             Background="#DAD7CD"
-            Height="40">
+            Height="50">
             <StackPanel Orientation="Horizontal" 
                         HorizontalAlignment="Right" VerticalAlignment="Center" 
                         Margin="10,0">
-                <TextBlock Text="{Binding FirstName}" FontSize="16" Foreground="Black" />
-                <TextBlock Text=" " />
-                <TextBlock Text="{Binding LastName}" FontSize="16" Foreground="Black" />
+                <TextBlock Text="{Binding FirstName}"
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Foreground="#2D3142" />
+                <TextBlock Text=" "
+                           VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding LastName}"
+                           VerticalAlignment="Center"
+                           FontSize="16"
+                           Foreground="#2D3142" />
+
+                <Button x:Name="LogoutButton"
+                        Style="{StaticResource LogoutButtonStyle}"
+                        Click="LogoutButton_Click"
+                        Margin="15,0,0,0"/>
             </StackPanel>
         </Border>
 
         <Border Grid.Row="2" Grid.ColumnSpan="3" 
                 Background="#DAD7CD" 
-                Height="40"/>
+                Height="50"/>
 
         <StackPanel Grid.Row="1" Grid.Column="0" 
                     Margin="5">

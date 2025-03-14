@@ -140,5 +140,14 @@ namespace File_Manager
             var usersWindow = new UsersWindow();
             usersWindow.Show();
         }
+
+
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow mainWin = new MainWindow();
+            mainWin.Show();
+            this.Close();
+        }
+
     }
 }
