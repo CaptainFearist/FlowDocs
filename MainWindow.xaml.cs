@@ -25,12 +25,23 @@ namespace File_Manager
 
         private async void LoginEnter_Click(object sender, RoutedEventArgs e)
         {
-            string username = LoginLogIn.Text;
-            string password = LoginPassInvis.Password;
+            string username = LoginLogIn.Text.Trim();
+            string password = LoginPassInvis.Password.Trim();
+
+            if (string.IsNullOrEmpty(username))
+            {
+                MessageBox.Show("Введите логин.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(password))
+            {
+                MessageBox.Show("Введите пароль.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             try
             {
-                
                 var user = await _context.Users
                                          .FirstOrDefaultAsync(u => u.Username == username && u.Password == password);
 
@@ -43,34 +54,34 @@ namespace File_Manager
 
                     switch (departmentId)
                     {
-                        case 1: // Бухгалтерия
+                        case 1:
                             nextWindow = new AccountingWindow(departmentId, userId, user.FirstName, user.LastName);
                             break;
-                        case 2: // Тестировщики
+                        case 2:
                             nextWindow = new TestersWindow(departmentId, userId, user.FirstName, user.LastName);
                             break;
-                        case 3: // Разработчики
+                        case 3:
                             nextWindow = new DevelopersWindow(departmentId, userId, user.FirstName, user.LastName);
                             break;
-                        case 4: // Продуктовые менеджеры
+                        case 4:
                             nextWindow = new ProductManagersWindow(departmentId, userId, user.FirstName, user.LastName);
                             break;
-                        case 5: // Кадровики
+                        case 5:
                             nextWindow = new HRWindow(departmentId, userId, user.FirstName, user.LastName);
                             break;
-                        case 6: // Маркетинг
+                        case 6:
                             nextWindow = new MarketingWindow(departmentId, userId, user.FirstName, user.LastName);
                             break;
-                        case 7: // Продажи
+                        case 7:
                             nextWindow = new SalesWindow(departmentId, userId, user.FirstName, user.LastName);
                             break;
-                        case 8: // Техподдержка
+                        case 8:
                             nextWindow = new Adminka(userId, user.FirstName, user.LastName);
                             break;
-                        case 9: // Дизайн
+                        case 9:
                             nextWindow = new DesignWindow(departmentId, userId, user.FirstName, user.LastName);
                             break;
-                        case 10: // Юридический отдел
+                        case 10:
                             nextWindow = new LegalDepartmentWindow(departmentId, userId, user.FirstName, user.LastName);
                             break;
                         default:
@@ -89,10 +100,6 @@ namespace File_Manager
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при подключении к базе данных: {ex.Message}", "Ошибка подключения", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                _context.Dispose();
             }
         }
 
