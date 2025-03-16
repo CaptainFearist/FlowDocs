@@ -1,15 +1,15 @@
 ﻿using File_Manager.Entities;
+using System;
 using System.Windows;
+using System.Windows.Threading;
 using Microsoft.EntityFrameworkCore;
 
 namespace File_Manager
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : System.Windows.Window
     {
         private IT_DepartmentsContext _context;
+        private DispatcherTimer errorTimer;
 
         public MainWindow()
         {
@@ -21,6 +21,10 @@ namespace File_Manager
                                          "TrustServerCertificate=True");
 
             _context = new IT_DepartmentsContext(optionsBuilder.Options);
+
+            errorTimer = new DispatcherTimer();
+            errorTimer.Interval = TimeSpan.FromSeconds(5);
+            errorTimer.Tick += ErrorTimer_Tick;
         }
 
         private async void LoginEnter_Click(object sender, RoutedEventArgs e)
@@ -28,15 +32,34 @@ namespace File_Manager
             string username = LoginLogIn.Text.Trim();
             string password = LoginPassInvis.Password.Trim();
 
+            bool hasError = false;
+
             if (string.IsNullOrEmpty(username))
             {
-                MessageBox.Show("Введите логин.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                LoginError.Visibility = Visibility.Visible;
+                LoginError.Text = "Введите логин";
+                hasError = true;
+            }
+            else
+            {
+                LoginError.Visibility = Visibility.Collapsed;
             }
 
             if (string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("Введите пароль.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                PasswordError.Visibility = Visibility.Visible;
+                PasswordError.Text = "Введите пароль";
+                hasError = true;
+            }
+            else
+            {
+                PasswordError.Visibility = Visibility.Collapsed;
+            }
+
+            if (hasError)
+            {
+                errorTimer.Stop();
+                errorTimer.Start();
                 return;
             }
 
@@ -94,13 +117,24 @@ namespace File_Manager
                 }
                 else
                 {
-                    MessageBox.Show("Неверный логин или пароль. Попробуйте снова.", "Ошибка входа", MessageBoxButton.OK, MessageBoxImage.Error);
+                    LoginError.Text = "Неверный логин или пароль";
+                    LoginError.Visibility = Visibility.Visible;
+                    PasswordError.Visibility = Visibility.Collapsed;
+                    errorTimer.Stop();
+                    errorTimer.Start();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при подключении к базе данных: {ex.Message}", "Ошибка подключения", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void ErrorTimer_Tick(object sender, EventArgs e)
+        {
+            LoginError.Visibility = Visibility.Collapsed;
+            PasswordError.Visibility = Visibility.Collapsed;
+            errorTimer.Stop();
         }
 
         private void TogglePasswordVisibility(object sender, RoutedEventArgs e)
@@ -120,7 +154,6 @@ namespace File_Manager
 
         private void Button_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            // При наведении мыши показываем пароль
             LoginPassVis.Text = LoginPassInvis.Password;
             LoginPassVis.Visibility = Visibility.Visible;
             LoginPassInvis.Visibility = Visibility.Collapsed;
@@ -128,7 +161,6 @@ namespace File_Manager
 
         private void Button_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            // При уходе мыши скрываем TextBox и показываем PasswordBox
             LoginPassVis.Visibility = Visibility.Collapsed;
             LoginPassInvis.Visibility = Visibility.Visible;
         }
