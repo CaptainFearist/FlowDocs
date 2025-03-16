@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <SolidColorBrush x:Key="PasswordBox.Static.Border" Color="#DAD7CD"/>
-    <SolidColorBrush x:Key="PasswordBox.MouseOver.Border" Color="#6A8D73"/>
+    <SolidColorBrush x:Key="PasswordBox.MouseOver.Border" Color="#DAD7CD"/>
     <SolidColorBrush x:Key="PasswordBox.Focus.Border" Color="#588157"/>
     <SolidColorBrush x:Key="PasswordBox.Background" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="PasswordBox.Foreground" Color="#2D3142"/>
