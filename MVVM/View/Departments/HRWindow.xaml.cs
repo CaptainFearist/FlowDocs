@@ -1,5 +1,6 @@
 ﻿using File_Manager.Entities;
 using File_Manager.MVVM.ViewModel;
+using File_Manager.MVVM.View.Technician;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 using System.Diagnostics;
@@ -349,9 +350,9 @@ namespace File_Manager
         }
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow mainWin = new MainWindow();
-            mainWin.Show();
-            this.Close();
+            ConfirmationWindow confirmWin = new ConfirmationWindow();
+            confirmWin.Owner = this;
+            confirmWin.ShowDialog();
         }
     }
 }
