@@ -11,18 +11,18 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="border" 
-                            Width="30" Height="30" 
-                            CornerRadius="50" 
-                            Background="{TemplateBinding Background}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            BorderThickness="{TemplateBinding BorderThickness}" 
+                    <Border x:Name="border"
+                            Width="30" Height="30"
+                            CornerRadius="50"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
                             SnapsToDevicePixels="true">
-                        <ContentPresenter x:Name="contentPresenter" 
-                                          Focusable="False" 
-                                          HorizontalAlignment="Center" 
-                                          VerticalAlignment="Center" 
-                                          Margin="{TemplateBinding Padding}"/>
+                        <ContentPresenter x:Name="contentPresenter"
+                                          Focusable="False"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Margin="0,-2,0,0"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -32,6 +32,7 @@
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Foreground" Value="#2D3142"/>
         <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Content" Value="👁"/>
 
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="true">

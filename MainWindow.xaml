@@ -105,8 +105,7 @@
                     IsDefault="True"/>
         </StackPanel>
 
-        <Button Content="👁"
-                Width="30" Height="30" 
+        <Button Width="30" Height="30" 
                 HorizontalAlignment="Right" VerticalAlignment="Top" 
                 Margin="0,157,10,0"
                 MouseEnter="Button_MouseEnter"
