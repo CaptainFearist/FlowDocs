@@ -31,7 +31,8 @@ namespace File_Manager
         {
             DepartmentsPanel.Children.Clear();
             var departments = _context.Departments.ToList();
-            string imagePath = System.IO.Path.Combine(Environment.CurrentDirectory, "Images", "folder.png");
+
+            string imagePath = "pack://application:,,,/Images/folder.png";
 
             foreach (var department in departments)
             {
@@ -80,6 +81,7 @@ namespace File_Manager
                 DepartmentsPanel.Children.Add(departmentButton);
             }
         }
+
 
 
         private void DepartmentButton_Click(object sender, RoutedEventArgs e)
