@@ -65,55 +65,66 @@ namespace File_Manager
 
             try
             {
-                var user = await _context.Users
-                                         .FirstOrDefaultAsync(u => u.Username == username && u.Password == password);
+                var users = await _context.Users.ToListAsync();
+                var user = users.FirstOrDefault(u => u.Username == username);
 
                 if (user != null)
                 {
-                    int departmentId = user.DepartmentId;
-                    int userId = user.UserId;
-
-                    System.Windows.Window nextWindow;
-
-                    switch (departmentId)
+                    if (user.Password == password)
                     {
-                        case 1:
-                            nextWindow = new AccountingWindow(departmentId, userId, user.FirstName, user.LastName);
-                            break;
-                        case 2:
-                            nextWindow = new TestersWindow(departmentId, userId, user.FirstName, user.LastName);
-                            break;
-                        case 3:
-                            nextWindow = new DevelopersWindow(departmentId, userId, user.FirstName, user.LastName);
-                            break;
-                        case 4:
-                            nextWindow = new ProductManagersWindow(departmentId, userId, user.FirstName, user.LastName);
-                            break;
-                        case 5:
-                            nextWindow = new HRWindow(departmentId, userId, user.FirstName, user.LastName);
-                            break;
-                        case 6:
-                            nextWindow = new MarketingWindow(departmentId, userId, user.FirstName, user.LastName);
-                            break;
-                        case 7:
-                            nextWindow = new SalesWindow(departmentId, userId, user.FirstName, user.LastName);
-                            break;
-                        case 8:
-                            nextWindow = new Adminka(userId, user.FirstName, user.LastName);
-                            break;
-                        case 9:
-                            nextWindow = new DesignWindow(departmentId, userId, user.FirstName, user.LastName);
-                            break;
-                        case 10:
-                            nextWindow = new LegalDepartmentWindow(departmentId, userId, user.FirstName, user.LastName);
-                            break;
-                        default:
-                            MessageBox.Show("Отдел не определен.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            return;
-                    }
+                        int departmentId = user.DepartmentId;
+                        int userId = user.UserId;
 
-                    nextWindow.Show();
-                    this.Close();
+                        System.Windows.Window nextWindow;
+
+                        switch (departmentId)
+                        {
+                            case 1:
+                                nextWindow = new AccountingWindow(departmentId, userId, user.FirstName, user.LastName);
+                                break;
+                            case 2:
+                                nextWindow = new TestersWindow(departmentId, userId, user.FirstName, user.LastName);
+                                break;
+                            case 3:
+                                nextWindow = new DevelopersWindow(departmentId, userId, user.FirstName, user.LastName);
+                                break;
+                            case 4:
+                                nextWindow = new ProductManagersWindow(departmentId, userId, user.FirstName, user.LastName);
+                                break;
+                            case 5:
+                                nextWindow = new HRWindow(departmentId, userId, user.FirstName, user.LastName);
+                                break;
+                            case 6:
+                                nextWindow = new MarketingWindow(departmentId, userId, user.FirstName, user.LastName);
+                                break;
+                            case 7:
+                                nextWindow = new SalesWindow(departmentId, userId, user.FirstName, user.LastName);
+                                break;
+                            case 8:
+                                nextWindow = new Adminka(userId, user.FirstName, user.LastName);
+                                break;
+                            case 9:
+                                nextWindow = new DesignWindow(departmentId, userId, user.FirstName, user.LastName);
+                                break;
+                            case 10:
+                                nextWindow = new LegalDepartmentWindow(departmentId, userId, user.FirstName, user.LastName);
+                                break;
+                            default:
+                                MessageBox.Show("Отдел не определен.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return;
+                        }
+
+                        nextWindow.Show();
+                        this.Close();
+                    }
+                    else
+                    {
+                        LoginError.Text = "Неверный логин или пароль";
+                        LoginError.Visibility = Visibility.Visible;
+                        PasswordError.Visibility = Visibility.Collapsed;
+                        errorTimer.Stop();
+                        errorTimer.Start();
+                    }
                 }
                 else
                 {
@@ -129,6 +140,8 @@ namespace File_Manager
                 MessageBox.Show($"Ошибка при подключении к базе данных: {ex.Message}", "Ошибка подключения", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+
 
         private void ErrorTimer_Tick(object sender, EventArgs e)
         {
