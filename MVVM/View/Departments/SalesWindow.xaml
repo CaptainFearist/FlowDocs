@@ -41,6 +41,10 @@
                            FontSize="16"
                            Foreground="#2D3142" />
 
+                <Button x:Name="ProfileButton"
+                        Style="{StaticResource ProfileButtonStyle}"
+                        Click="ProfileButton_Click"
+                        Margin="15,0,0,0"/>
                 <Button x:Name="LogoutButton"
                         Style="{StaticResource LogoutButtonStyle}"
                         Click="LogoutButton_Click"
