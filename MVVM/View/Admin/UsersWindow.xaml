@@ -4,7 +4,7 @@
         Title="Список сотрудников"
         WindowStartupLocation="CenterScreen"
         Height="600" Width="800"
-        MinWidth="590" MinHeight="400"
+        MinWidth="620" MinHeight="410"
         Icon="/Images/FlowDocs.ico"
         SizeChanged="Window_SizeChanged">
 
