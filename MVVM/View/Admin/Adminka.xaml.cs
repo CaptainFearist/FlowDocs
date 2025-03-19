@@ -82,8 +82,6 @@ namespace File_Manager
             }
         }
 
-
-
         private void DepartmentButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.Tag is int departmentId)
@@ -152,6 +150,20 @@ namespace File_Manager
             usersWindow.Show();
         }
 
+        private void ProfileButton_Click(object sender, RoutedEventArgs e)
+        {
+            var currentUser = _context.Users.Find(_userId);
+
+            if (currentUser != null)
+            {
+                var profileWindow = new ProfileWindow(currentUser, _context);
+                profileWindow.Show();
+            }
+            else
+            {
+                MessageBox.Show("Пользователь не найден.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
