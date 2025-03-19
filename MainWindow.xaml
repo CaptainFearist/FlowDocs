@@ -17,7 +17,7 @@
                    FontFamily="Tahoma"
                    Foreground="#2D3142"
                    HorizontalAlignment="Center" 
-                   Height="35"/>
+                   Height="36"/>
             <Label Content="FlowDocs" 
                    FontSize="18" 
                    Foreground="#2D3142"
@@ -26,12 +26,12 @@
                    Height="36"/>
         </StackPanel>
 
-        <StackPanel Margin="0,136,0,92" 
+        <StackPanel Margin="0,136,0,75" 
                     HorizontalAlignment="Center">
 
             <Grid>
                 <TextBox x:Name="LoginLogIn" 
-                         Width="290" Height="30" 
+                         Width="290" Height="35" 
                          VerticalContentAlignment="Center"
                          Margin="0,0,0,5"
                          Style="{StaticResource TextPass}"
@@ -42,7 +42,7 @@
                            FontFamily="Tahoma"
                            VerticalAlignment="Top" 
                            HorizontalAlignment="Left" 
-                           Margin="10,7,0,0"
+                           Margin="10,10,0,0"
                            Foreground="Gray" 
                            IsHitTestVisible="False" 
                            Visibility="Visible" />
@@ -59,7 +59,7 @@
 
             <Grid>
                 <PasswordBox x:Name="LoginPassInvis" 
-                             Height="30" Width="290" 
+                             Height="35" Width="290" 
                              VerticalContentAlignment="Center"
                              Style="{StaticResource TextPassp}"
                              GotFocus="LoginPassInvis_GotFocus"
