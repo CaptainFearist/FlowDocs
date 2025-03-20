@@ -76,7 +76,7 @@
                            Visibility="Visible" />
 
                 <TextBox x:Name="LoginPassVis" 
-                         Height="30" Width="290" 
+                         Height="35" Width="290" 
                          VerticalContentAlignment="Center"
                          Style="{StaticResource TextPass}" 
                          Visibility="Collapsed"
