@@ -361,7 +361,7 @@ namespace File_Manager
             {
                 MessageBox.Show("Пользователь не найден.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }s
+        }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
