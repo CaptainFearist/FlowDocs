@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace File_Manager.MVVM.ViewModel
 {
@@ -26,10 +27,32 @@ namespace File_Manager.MVVM.ViewModel
             }
         }
 
+        private ObservableCollection<FileItem> _files;
+        public ObservableCollection<FileItem> Files
+        {
+            get => _files;
+            set
+            {
+                _files = value;
+                OnPropertyChanged(nameof(Files));
+            }
+        }
+
+        public NamesEnter()
+        {
+            Files = new ObservableCollection<FileItem>();
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+    }
+
+    public class FileItem
+    {
+        public string FileName { get; set; }
+        public string UploadDate { get; set; }
     }
 }
