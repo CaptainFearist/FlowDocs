@@ -4,7 +4,7 @@
         Title="Список сотрудников"
         WindowStartupLocation="CenterScreen"
         Height="600" Width="800"
-        MinWidth="620" MinHeight="410"
+        MinWidth="800" MinHeight="410"
         Icon="/Images/FlowDocs.ico"
         SizeChanged="Window_SizeChanged">
 
@@ -93,6 +93,15 @@
                     <GridViewColumn Header="Email"
                                     DisplayMemberBinding="{Binding Email}"
                                     Width="220">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontSize="14"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Отдел"
+                                    DisplayMemberBinding="{Binding DepartmentName}"
+                                    Width="200">
                         <GridViewColumn.HeaderTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding}" FontSize="14"/>
