@@ -35,7 +35,8 @@ namespace File_Manager
                 {
                     FirstName = emp.FirstName,
                     LastName = emp.LastName,
-                    Email = emp.Email
+                    Email = emp.Email,
+                    DepartmentName = emp.Department.DepartmentName
                 })
                 .ToListAsync();
 
