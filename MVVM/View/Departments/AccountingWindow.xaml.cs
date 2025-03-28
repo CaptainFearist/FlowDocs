@@ -258,6 +258,20 @@ namespace File_Manager
             }
         }
 
+        private void DeptUsers_Click(object sender, RoutedEventArgs e)
+        {
+            var department = _context.Departments.FirstOrDefault(d => d.DepartmentId == _departmentId);
+            if (department != null)
+            {
+                var departmentUsersWindow = new DepartmentUsersWindow(department.DepartmentName);
+                departmentUsersWindow.Show();
+            }
+            else
+            {
+                MessageBox.Show("Не удалось найти отдел.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
         private void Search_GotFocus(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(SearchBox.Text))
