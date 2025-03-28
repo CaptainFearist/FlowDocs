@@ -5,74 +5,116 @@
         WindowStartupLocation="CenterScreen"
         Height="600" Width="1000"
         MinHeight="520" MinWidth="820"
-        Icon="/Images/FlowDocs.ico">
-
-    <Grid Background="#F5EFE6">
-        <Grid>
+        Icon="/Images/FlowDocs.ico"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStyle="None">
+    <DockPanel Background="#F5EFE6">
+        <Grid DockPanel.Dock="Top"
+              Background="#b8b5ad"
+              Height="30"
+              MouseDown="Grid_MouseDown">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="190"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="50"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="50"/>
-            </Grid.RowDefinitions>
-
-            <Border Grid.Row="0" Grid.ColumnSpan="2" 
-                    Background="#DAD7CD" 
-                    Height="50">
-                
-                <StackPanel Orientation="Horizontal" 
-                            HorizontalAlignment="Right" VerticalAlignment="Center" 
-                            Margin="10,0">
-                    <TextBlock x:Name="AdminNameTextBlock" 
-                               FontSize="16" 
-                               Foreground="#2D3142" 
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               Margin="0,0,15,0"/>
-
-                    <Button x:Name="ProfileButton"
-                            Style="{StaticResource ProfileButtonStyle}"
-                            Click="ProfileButton_Click"
-                            Margin="5,0,15,0"/>
-                    <Button x:Name="LogoutButton"
-                            Style="{StaticResource LogoutButtonStyle}"
-                            Click="LogoutButton_Click"/>
-                </StackPanel>
-            </Border>
-
-            <Border Grid.Row="2" Grid.ColumnSpan="2" 
-                    Background="#DAD7CD"
-                    Height="50"/>
-
-            <StackPanel Grid.Column="0" Grid.Row="1" Margin="5,10,0,10">
-                <Button x:Name="AddUserButton" 
-                        Content="Добавить сотрудника" 
-                        Margin="5"
-                        Width="175" Height="50"
-                        FontSize="16"
-                        Click="AddUserButton_Click"
-                        Style="{StaticResource MenuButton}"
-                        Foreground="#2D3142"/>
-
-                <Button x:Name="ViewAllUsersButton" 
-                        Content="Сотрудники" 
-                        Margin="5"
-                        Width="175" Height="50"
-                        FontSize="16"
-                        Click="ViewAllUsersButton_Click"
-                        Style="{StaticResource MenuButton}"
-                        Foreground="#2D3142"/>
+            <StackPanel Orientation="Horizontal" 
+                        Grid.Column="0" 
+                        Margin="10,5">
+                <Image Source="/Images/FlowDocs.ico"
+                       Height="20" Width="20" 
+                       VerticalAlignment="Center" 
+                       Margin="0,0,5,0"/>
+                <TextBlock Text="Администрирование"
+                           FontSize="12"
+                           VerticalAlignment="Center"/>
             </StackPanel>
 
-            <UniformGrid x:Name="DepartmentsPanel" 
-                         Grid.Row="1" Grid.Column="1" 
-                         Margin="10,10,10,10" 
-                         Columns="2"/>
-
+            <StackPanel Orientation="Horizontal"
+                        Grid.Column="2"
+                        HorizontalAlignment="Right"
+                        Margin="10,0">
+                <Button Style="{StaticResource MinimizeButtonStyle}"
+                        Click="MinimizeWindow"
+                        Margin="5"/>
+                <Button Style="{StaticResource MaximizeRestoreButtonStyle}"
+                        Click="MaximizeRestoreWindow"
+                        Margin="5"/>
+                <Button Style="{StaticResource CloseButtonStyle}"
+                        Click="CloseWindow"
+                        Margin="5"/>
+            </StackPanel>
         </Grid>
-    </Grid>
+
+        <Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="190"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Grid.ColumnSpan="2" 
+                        Background="#DAD7CD" 
+                        Height="50">
+                    
+                    <StackPanel Orientation="Horizontal" 
+                                HorizontalAlignment="Right" VerticalAlignment="Center" 
+                                Margin="10,0">
+                        <TextBlock x:Name="AdminNameTextBlock" 
+                                   FontSize="16" 
+                                   Foreground="#2D3142" 
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,15,0"/>
+
+                        <Button x:Name="ProfileButton"
+                                Style="{StaticResource ProfileButtonStyle}"
+                                Click="ProfileButton_Click"
+                                Margin="5,0,15,0"/>
+                        <Button x:Name="LogoutButton"
+                                Style="{StaticResource LogoutButtonStyle}"
+                                Click="LogoutButton_Click"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="2" Grid.ColumnSpan="2" 
+                        Background="#DAD7CD"
+                        Height="50"/>
+
+                <StackPanel Grid.Column="0" Grid.Row="1" Margin="5,10,0,10">
+                    <Button x:Name="AddUserButton" 
+                            Content="Добавить сотрудника" 
+                            Margin="5"
+                            Width="175" Height="50"
+                            FontSize="16"
+                            Click="AddUserButton_Click"
+                            Style="{StaticResource MenuButton}"
+                            Foreground="#2D3142"/>
+
+                    <Button x:Name="ViewAllUsersButton" 
+                            Content="Сотрудники" 
+                            Margin="5"
+                            Width="175" Height="50"
+                            FontSize="16"
+                            Click="ViewAllUsersButton_Click"
+                            Style="{StaticResource MenuButton}"
+                            Foreground="#2D3142"/>
+                </StackPanel>
+
+                <UniformGrid x:Name="DepartmentsPanel" 
+                             Grid.Row="1" Grid.Column="1" 
+                             Margin="10,10,10,10" 
+                             Columns="2"/>
+
+            </Grid>
+        </Grid>
+    </DockPanel>
 </Window>

@@ -6,110 +6,152 @@
         Height="600" Width="800"
         MinWidth="800" MinHeight="410"
         Icon="/Images/FlowDocs.ico"
-        SizeChanged="Window_SizeChanged">
+        SizeChanged="Window_SizeChanged"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStyle="None">
+    <DockPanel Background="#F5EFE6">
+        <Grid DockPanel.Dock="Top"
+              Background="#b8b5ad"
+              Height="30"
+              MouseDown="Grid_MouseDown">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-    <Grid Background="#F5EFE6">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" 
+                        Grid.Column="0" 
+                        Margin="10,5">
+                <Image Source="/Images/FlowDocs.ico"
+                       Height="20" Width="20" 
+                       VerticalAlignment="Center" 
+                       Margin="0,0,5,0"/>
+                <TextBlock Text="Сотрудники"
+                           FontSize="12"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
 
-        <StackPanel Margin="10" Grid.Row="0">
-            <Grid Margin="0,0,0,10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="260" />
-                </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal"
+                        Grid.Column="2"
+                        HorizontalAlignment="Right"
+                        Margin="10,0">
+                <Button Style="{StaticResource MinimizeButtonStyle}"
+                        Click="MinimizeWindow"
+                        Margin="5"/>
+                <Button Style="{StaticResource MaximizeRestoreButtonStyle}"
+                        Click="MaximizeRestoreWindow"
+                        Margin="5"/>
+                <Button Style="{StaticResource CloseButtonStyle}"
+                        Click="CloseWindow"
+                        Margin="5"/>
+            </StackPanel>
+        </Grid>
 
-                <TextBlock x:Name="DepartmentNameTextBlock"
-                           Text="Список сотрудников"
-                           FontSize="20" FontWeight="Bold"
-                           VerticalAlignment="Center"
-                           Margin="0,0,10,0"
-                           Grid.Column="0"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-                <TextBox x:Name="SearchBox"
-                         Width="230"
-                         Height="25"
-                         HorizontalAlignment="Left"
-                         Margin="30,0,0,0"
-                         VerticalAlignment="Center"
-                         Grid.Column="1"
-                         Style="{StaticResource ModernSearch}"
-                         TextChanged="SearchBox_TextChanged"
-                         GotFocus="Search_GotFocus"
-                         LostFocus="Search_LostFocus"/>
-                <TextBlock x:Name="SearchHint"
-                           Text="Поиск..."
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Left"
-                           Foreground="Gray"
-                           IsHitTestVisible="False"
-                           Visibility="Visible" Grid.Column="1" Margin="39,0,0,0" />
-            </Grid>
-        </StackPanel>
+            <StackPanel Margin="10" Grid.Row="0">
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="260" />
+                    </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
-                    Margin="0,0,0,10" Grid.Row="1">
-            <Button x:Name="DeleteUserButton"
-                    Content="Удалить сотрудника"
-                    Width="150" Height="30"
-                    Margin="0,0,10,0"
-                    Click="DeleteUserButton_Click"
-                    Style="{StaticResource AddDelete}"/>
-        </StackPanel>
+                    <TextBlock x:Name="DepartmentNameTextBlock"
+                               Text="Список сотрудников"
+                               FontSize="20" FontWeight="Bold"
+                               VerticalAlignment="Center"
+                               Margin="0,0,10,0"
+                               Grid.Column="0"/>
 
-        <ListView x:Name="UsersListView"
-                  ItemsSource="{Binding Users}"
-                  MouseDoubleClick="UsersListView_MouseDoubleClick"
-                  Background="{StaticResource ListView.Background}"
-                  AlternationCount="2"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch"
-                  Grid.Row="2"
-                  Margin="15">
+                    <TextBox x:Name="SearchBox"
+                             Width="230"
+                             Height="25"
+                             HorizontalAlignment="Left"
+                             Margin="30,0,0,0"
+                             VerticalAlignment="Center"
+                             Grid.Column="1"
+                             Style="{StaticResource ModernSearch}"
+                             TextChanged="SearchBox_TextChanged"
+                             GotFocus="Search_GotFocus"
+                             LostFocus="Search_LostFocus"/>
+                    <TextBlock x:Name="SearchHint"
+                               Text="Поиск..."
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Foreground="Gray"
+                               IsHitTestVisible="False"
+                               Visibility="Visible" Grid.Column="1" Margin="39,0,0,0" />
+                </Grid>
+            </StackPanel>
 
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Имя"
-                                    DisplayMemberBinding="{Binding FirstName}"
-                                    Width="160">
-                        <GridViewColumn.HeaderTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}" FontSize="14"/>
-                            </DataTemplate>
-                        </GridViewColumn.HeaderTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Фамилия"
-                                    DisplayMemberBinding="{Binding LastName}"
-                                    Width="160">
-                        <GridViewColumn.HeaderTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}" FontSize="14"/>
-                            </DataTemplate>
-                        </GridViewColumn.HeaderTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Email"
-                                    DisplayMemberBinding="{Binding Email}"
-                                    Width="220">
-                        <GridViewColumn.HeaderTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}" FontSize="14"/>
-                            </DataTemplate>
-                        </GridViewColumn.HeaderTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Отдел"
-                                    DisplayMemberBinding="{Binding DepartmentName}"
-                                    Width="200">
-                        <GridViewColumn.HeaderTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}" FontSize="14"/>
-                            </DataTemplate>
-                        </GridViewColumn.HeaderTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
-    </Grid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                        Margin="0,0,0,10" Grid.Row="1">
+                <Button x:Name="DeleteUserButton"
+                        Content="Удалить сотрудника"
+                        Width="150" Height="30"
+                        Margin="0,0,10,0"
+                        Click="DeleteUserButton_Click"
+                        Style="{StaticResource AddDelete}"/>
+            </StackPanel>
+
+            <ListView x:Name="UsersListView"
+                      ItemsSource="{Binding Users}"
+                      MouseDoubleClick="UsersListView_MouseDoubleClick"
+                      Background="{StaticResource ListView.Background}"
+                      AlternationCount="2"
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      Grid.Row="2"
+                      Margin="15">
+
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Имя"
+                                        DisplayMemberBinding="{Binding FirstName}"
+                                        Width="160">
+                            <GridViewColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontSize="14"/>
+                                </DataTemplate>
+                            </GridViewColumn.HeaderTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Фамилия"
+                                        DisplayMemberBinding="{Binding LastName}"
+                                        Width="160">
+                            <GridViewColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontSize="14"/>
+                                </DataTemplate>
+                            </GridViewColumn.HeaderTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Email"
+                                        DisplayMemberBinding="{Binding Email}"
+                                        Width="220">
+                            <GridViewColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontSize="14"/>
+                                </DataTemplate>
+                            </GridViewColumn.HeaderTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Отдел"
+                                        DisplayMemberBinding="{Binding DepartmentName}"
+                                        Width="200">
+                            <GridViewColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontSize="14"/>
+                                </DataTemplate>
+                            </GridViewColumn.HeaderTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+    </DockPanel>
 </Window>

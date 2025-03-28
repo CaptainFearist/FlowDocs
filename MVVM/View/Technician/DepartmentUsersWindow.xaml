@@ -8,79 +8,120 @@
         Title="Сотрудники" 
         Height="600" Width="800"
         MinWidth="800" MinHeight="410"
-        Icon="/Images/FlowDocs.ico">
-    <Grid Background="#F5EFE6">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        Icon="/Images/FlowDocs.ico"
+        WindowStyle="None"
+        Background="Transparent">
+    <DockPanel Background="#F5EFE6">
+        <Grid DockPanel.Dock="Top"
+              Background="#b8b5ad"
+              Height="30"
+              MouseDown="Grid_MouseDown">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-        <StackPanel Margin="10" Grid.Row="0">
-            <Grid Margin="0,0,0,10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="260" />
-                </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" 
+                        Grid.Column="0" 
+                        Margin="10,5">
+                <Image Source="/Images/FlowDocs.ico"
+                       Height="20" Width="20" 
+                       VerticalAlignment="Center" 
+                       Margin="0,0,5,0"/>
+                <TextBlock Text="Сотрудники"
+                           FontSize="12"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
 
-                <TextBlock x:Name="DepartmentNameTextBlock"
-                           Text="Список сотрудников"
-                           FontSize="20" FontWeight="Bold"
-                           VerticalAlignment="Center"
-                           Margin="0,0,10,0"
-                           Grid.Column="0"/>
+            <StackPanel Orientation="Horizontal"
+                        Grid.Column="2"
+                        HorizontalAlignment="Right"
+                        Margin="10,0">
+                <Button Style="{StaticResource MinimizeButtonStyle}"
+                        Click="MinimizeWindow"
+                        Margin="5"/>
+                <Button Style="{StaticResource MaximizeRestoreButtonStyle}"
+                        Click="MaximizeRestoreWindow"
+                        Margin="5"/>
+                <Button Style="{StaticResource CloseButtonStyle}"
+                        Click="CloseWindow"
+                        Margin="5"/>
+            </StackPanel>
+        </Grid>
 
-                <TextBox x:Name="SearchBox"
-                         Width="230"
-                         Height="25"
-                         HorizontalAlignment="Left"
-                         Margin="30,0,0,0"
-                         VerticalAlignment="Center"
-                         Grid.Column="1"
-                         Style="{StaticResource ModernSearch}"
-                         TextChanged="SearchBox_TextChanged"
-                         GotFocus="Search_GotFocus"
-                         LostFocus="Search_LostFocus"/>
-                <TextBlock x:Name="SearchHint"
-                           Text="Поиск..."
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Left"
-                           Foreground="Gray"
-                           IsHitTestVisible="False"
-                           Visibility="Visible" Grid.Column="1" Margin="39,0,0,0" />
-            </Grid>
-        </StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <ListView x:Name="DepartmentsUsersListView"
-                  ItemsSource="{Binding Users}"
-                  Background="{StaticResource ListView.Background}"
-                  AlternationCount="2"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch"
-                  Grid.Row="2"
-                  Margin="15">
+            <StackPanel Margin="10" Grid.Row="0">
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="260" />
+                    </Grid.ColumnDefinitions>
 
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Имя"
-                                    DisplayMemberBinding="{Binding FirstName}"
-                                    Width="365">
-                        <GridViewColumn.HeaderTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}" FontSize="14"/>
-                            </DataTemplate>
-                        </GridViewColumn.HeaderTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Фамилия"
-                                    DisplayMemberBinding="{Binding LastName}"
-                                    Width="365">
-                        <GridViewColumn.HeaderTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}" FontSize="14"/>
-                            </DataTemplate>
-                        </GridViewColumn.HeaderTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
-    </Grid>
+                    <TextBlock x:Name="DepartmentNameTextBlock"
+                               Text="Список сотрудников"
+                               FontSize="20" FontWeight="Bold"
+                               VerticalAlignment="Center"
+                               Margin="0,0,10,0"
+                               Grid.Column="0"/>
+
+                    <TextBox x:Name="SearchBox"
+                                 Width="230"
+                                 Height="25"
+                                 HorizontalAlignment="Left"
+                                 Margin="30,0,0,0"
+                                 VerticalAlignment="Center"
+                                 Grid.Column="1"
+                                 Style="{StaticResource ModernSearch}"
+                                 TextChanged="SearchBox_TextChanged"
+                                 GotFocus="Search_GotFocus"
+                                 LostFocus="Search_LostFocus"/>
+                    <TextBlock x:Name="SearchHint"
+                                   Text="Поиск..."
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Left"
+                                   Foreground="Gray"
+                                   IsHitTestVisible="False"
+                                   Visibility="Visible" Grid.Column="1" Margin="39,0,0,0" />
+                </Grid>
+            </StackPanel>
+
+            <ListView x:Name="DepartmentsUsersListView"
+                      ItemsSource="{Binding Users}"
+                      Background="{StaticResource ListView.Background}"
+                      AlternationCount="2"
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      Grid.Row="1"
+                      Margin="15">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Имя"
+                                        DisplayMemberBinding="{Binding FirstName}"
+                                        Width="365">
+                            <GridViewColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontSize="14"/>
+                                </DataTemplate>
+                            </GridViewColumn.HeaderTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Фамилия"
+                                        DisplayMemberBinding="{Binding LastName}"
+                                        Width="365">
+                            <GridViewColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontSize="14"/>
+                                </DataTemplate>
+                            </GridViewColumn.HeaderTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+    </DockPanel>
 </Window>
