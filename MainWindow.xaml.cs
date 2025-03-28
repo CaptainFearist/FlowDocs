@@ -3,6 +3,7 @@ using System;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.EntityFrameworkCore;
+using System.Windows.Input;
 
 namespace File_Manager
 {
@@ -25,6 +26,36 @@ namespace File_Manager
             errorTimer = new DispatcherTimer();
             errorTimer.Interval = TimeSpan.FromSeconds(5);
             errorTimer.Tick += ErrorTimer_Tick;
+        }
+
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                DragMove();
+            }
+        }
+
+        private void MinimizeWindow(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void MaximizeRestoreWindow(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                WindowState = WindowState.Normal;
+            }
+            else
+            {
+                WindowState = WindowState.Maximized;
+            }
+        }
+
+        private void CloseWindow(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
 
         private async void LoginEnter_Click(object sender, RoutedEventArgs e)
