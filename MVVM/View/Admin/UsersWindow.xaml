@@ -9,7 +9,8 @@
         SizeChanged="Window_SizeChanged"
         AllowsTransparency="True"
         Background="Transparent"
-        WindowStyle="None">
+        WindowStyle="None"
+        ResizeMode="CanResizeWithGrip">
     <DockPanel Background="#F5EFE6">
         <Grid DockPanel.Dock="Top"
               Background="#b8b5ad"
@@ -49,7 +50,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid>
+        <Grid Name="MainContentGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>

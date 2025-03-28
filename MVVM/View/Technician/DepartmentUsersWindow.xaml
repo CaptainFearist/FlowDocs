@@ -6,11 +6,15 @@
         xmlns:local="clr-namespace:File_Manager.MVVM.View.Technician"
         mc:Ignorable="d"
         Title="Сотрудники" 
+        WindowStartupLocation="CenterScreen"
         Height="600" Width="800"
         MinWidth="800" MinHeight="410"
         Icon="/Images/FlowDocs.ico"
+        
         WindowStyle="None"
-        Background="Transparent">
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="CanResizeWithGrip">
     <DockPanel Background="#F5EFE6">
         <Grid DockPanel.Dock="Top"
               Background="#b8b5ad"
