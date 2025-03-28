@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:File_Manager"
         mc:Ignorable="d"
-        Title="Тестировщики"
+        Title="Отдел тестирования"
         WindowStartupLocation="CenterScreen"
         Height="625" Width="1000"
         MinWidth="970" MinHeight="625"
@@ -32,7 +32,7 @@
                        Height="20" Width="20" 
                        VerticalAlignment="Center" 
                        Margin="0,0,5,0"/>
-                <TextBlock Text="Сотрудники"
+                <TextBlock Text="Отдел тестирования"
                            FontSize="12"
                            VerticalAlignment="Center"/>
             </StackPanel>
