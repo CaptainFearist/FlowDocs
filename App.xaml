@@ -19,6 +19,9 @@
                 <ResourceDictionary Source="Themes/DateMinMax.xaml"/>
                 <ResourceDictionary Source="Themes/LogOutBtn.xaml"/>
                 <ResourceDictionary Source="Themes/ProfileBtn.xaml"/>
+                <ResourceDictionary Source="Themes/CloseButtonStyle.xaml"/>
+                <ResourceDictionary Source="Themes/MinimizeButtonStyle.xaml"/>
+                <ResourceDictionary Source="Themes/MaximizeRestoreButtonStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
