@@ -116,37 +116,37 @@
                     <GridView>
                         <GridViewColumn Header="Имя"
                                         DisplayMemberBinding="{Binding FirstName}"
-                                        Width="160">
+                                        Width="165">
                             <GridViewColumn.HeaderTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding}" FontSize="14"/>
+                                    <TextBlock Text="{Binding}" FontSize="16"/>
                                 </DataTemplate>
                             </GridViewColumn.HeaderTemplate>
                         </GridViewColumn>
                         <GridViewColumn Header="Фамилия"
                                         DisplayMemberBinding="{Binding LastName}"
-                                        Width="160">
+                                        Width="165">
                             <GridViewColumn.HeaderTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding}" FontSize="14"/>
+                                    <TextBlock Text="{Binding}" FontSize="16"/>
                                 </DataTemplate>
                             </GridViewColumn.HeaderTemplate>
                         </GridViewColumn>
                         <GridViewColumn Header="Email"
                                         DisplayMemberBinding="{Binding Email}"
-                                        Width="220">
+                                        Width="230">
                             <GridViewColumn.HeaderTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding}" FontSize="14"/>
+                                    <TextBlock Text="{Binding}" FontSize="16"/>
                                 </DataTemplate>
                             </GridViewColumn.HeaderTemplate>
                         </GridViewColumn>
                         <GridViewColumn Header="Отдел"
                                         DisplayMemberBinding="{Binding DepartmentName}"
-                                        Width="200">
+                                        Width="205">
                             <GridViewColumn.HeaderTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding}" FontSize="14"/>
+                                    <TextBlock Text="{Binding}" FontSize="16"/>
                                 </DataTemplate>
                             </GridViewColumn.HeaderTemplate>
                         </GridViewColumn>

@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Файлы отделов"
         WindowStartupLocation="CenterScreen"
-        Height="625" Width="1000"
-        MinWidth="970" MinHeight="625"
+        Height="600" Width="800"
+        MinWidth="800" MinHeight="410"
         Icon="/Images/FlowDocs.ico"
         SizeChanged="Window_SizeChanged"
         AllowsTransparency="True"
@@ -134,7 +134,7 @@
                     <GridView>
                         <GridViewColumn Header="Название файла"
                                         DisplayMemberBinding="{Binding FileName}"
-                                        Width="360">
+                                        Width="384">
                             <GridViewColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding}" FontSize="14"/>
@@ -143,7 +143,7 @@
                         </GridViewColumn>
                         <GridViewColumn Header="Когда загружен"
                                         DisplayMemberBinding="{Binding UploadDate}"
-                                        Width="300">
+                                        Width="380">
                             <GridViewColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding}" FontSize="14"/>

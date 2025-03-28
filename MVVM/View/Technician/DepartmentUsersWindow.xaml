@@ -102,12 +102,13 @@
                       VerticalAlignment="Stretch"
                       HorizontalAlignment="Stretch"
                       Grid.Row="1"
-                      Margin="15">
+                      Margin="15"
+                      SizeChanged="Window_SizeChanged">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Имя"
                                         DisplayMemberBinding="{Binding FirstName}"
-                                        Width="365">
+                                        Width="375">
                             <GridViewColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding}" FontSize="14"/>
@@ -116,7 +117,7 @@
                         </GridViewColumn>
                         <GridViewColumn Header="Фамилия"
                                         DisplayMemberBinding="{Binding LastName}"
-                                        Width="365">
+                                        Width="375">
                             <GridViewColumn.HeaderTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding}" FontSize="14"/>
