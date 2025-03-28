@@ -33,6 +33,7 @@
         <Setter Property="Foreground" Value="#000000"/>
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="Content" Value="×"/>
+        <Setter Property="ToolTip" Value="Закрыть"/>
 
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="true">
