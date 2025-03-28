@@ -16,6 +16,7 @@ namespace File_Manager.MVVM.View.Technician
         private readonly IT_DepartmentsContext _context;
         public ObservableCollection<DepartmentUsersViewModel> DeptUsers { get; set; }
         private readonly string _departmentName;
+        private WindowResizer _windowResizer;
 
         public DepartmentUsersWindow(string departmentName)
         {
@@ -35,6 +36,7 @@ namespace File_Manager.MVVM.View.Technician
             DepartmentNameTextBlock.Text = $"Сотрудники отдела: {departmentName}";
 
             LoadUsersAsync();
+            _windowResizer = new WindowResizer(this);
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -116,13 +118,13 @@ namespace File_Manager.MVVM.View.Technician
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            double totalWidth = DepartmentsUsersListView.ActualWidth - 25; // Вычитаем небольшие отступы
+            double totalWidth = DepartmentsUsersListView.ActualWidth - 25;
             if (totalWidth > 0)
             {
                 var gridView = DepartmentsUsersListView.View as GridView;
                 if (gridView != null && gridView.Columns.Count == 2)
                 {
-                    double columnWidth = totalWidth / 2; // Делаем все столбцы одинаковыми
+                    double columnWidth = totalWidth / 2;
                     gridView.Columns[0].Width = columnWidth;
                     gridView.Columns[1].Width = columnWidth;
                 }

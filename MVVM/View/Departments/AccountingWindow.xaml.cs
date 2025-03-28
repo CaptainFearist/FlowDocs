@@ -15,6 +15,7 @@ namespace File_Manager
         private readonly IT_DepartmentsContext _context;
         private readonly int _departmentId;
         private readonly int _userId;
+        private WindowResizer _windowResizer;
         public NamesEnter ViewModel { get; set; }
 
         public AccountingWindow(int departmentId, int userId, string firstName, string lastName)
@@ -38,6 +39,7 @@ namespace File_Manager
 
             DataContext = ViewModel;
             LoadDepartmentFiles();
+            _windowResizer = new WindowResizer(this);
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)

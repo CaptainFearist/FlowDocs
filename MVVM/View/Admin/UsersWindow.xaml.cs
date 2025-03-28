@@ -14,6 +14,7 @@ namespace File_Manager
     {
         private readonly IT_DepartmentsContext _context;
         private List<EmployeeViewModel> _allUsers;
+        private WindowResizer _windowResizer;
 
         public UsersWindow()
         {
@@ -27,6 +28,7 @@ namespace File_Manager
 
             _context = new IT_DepartmentsContext(options);
             LoadUsersAsync();
+            _windowResizer = new WindowResizer(this);
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -214,16 +216,17 @@ namespace File_Manager
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            double totalWidth = UsersListView.ActualWidth - 25; // Вычитаем небольшие отступы
+            double totalWidth = UsersListView.ActualWidth - 25;
             if (totalWidth > 0)
             {
                 var gridView = UsersListView.View as GridView;
-                if (gridView != null && gridView.Columns.Count == 3)
+                if (gridView != null && gridView.Columns.Count == 4)
                 {
-                    double columnWidth = totalWidth / 3; // Делаем все столбцы одинаковыми
+                    double columnWidth = totalWidth / 4; 
                     gridView.Columns[0].Width = columnWidth;
                     gridView.Columns[1].Width = columnWidth;
                     gridView.Columns[2].Width = columnWidth;
+                    gridView.Columns[3].Width = columnWidth;
                 }
             }
         }

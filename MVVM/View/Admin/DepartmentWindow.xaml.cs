@@ -14,6 +14,7 @@ namespace File_Manager
         private readonly IT_DepartmentsContext _context;
         private readonly int _departmentId;
         private readonly int _userId;
+        private WindowResizer _windowResizer;
         public string DepartmentName { get; set; }
 
         public DepartmentWindow(int departmentId, int userId, IT_DepartmentsContext context, string departmentName)
@@ -27,6 +28,7 @@ namespace File_Manager
             LoadDepartmentFiles();
 
             this.Closed += (s, e) => _context.Dispose();
+            _windowResizer = new WindowResizer(this);
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)

@@ -18,6 +18,7 @@ namespace File_Manager
         private readonly IT_DepartmentsContext _context;
         private readonly int _departmentId;
         private readonly int _userId;
+        private WindowResizer _windowResizer;
         public NamesEnter ViewModel { get; set; }
 
         public SalesWindow(int departmentId, int userId, string firstName, string lastName)
@@ -40,6 +41,7 @@ namespace File_Manager
             InitializeComponent();
             DataContext = ViewModel;
             LoadFilesAsync();
+            _windowResizer = new WindowResizer(this);
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)

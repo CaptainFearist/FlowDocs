@@ -1,5 +1,6 @@
 ﻿using File_Manager.Entities;
 using File_Manager.MVVM.View.Technician;
+using File_Manager.MVVM.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +13,7 @@ namespace File_Manager
     {
         private readonly IT_DepartmentsContext _context;
         private readonly int _userId;
+        private WindowResizer _windowResizer;
 
         public Adminka(int userId, string firstName, string lastName)
         {
@@ -26,6 +28,7 @@ namespace File_Manager
 
             _context = new IT_DepartmentsContext(optionsBuilder.Options);
             LoadDepartments();
+            _windowResizer = new WindowResizer(this);
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
