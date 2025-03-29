@@ -94,6 +94,12 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
                         Margin="0,0,0,10" Grid.Row="1">
+                <Button x:Name="UpdateUserButton"
+                        Content="Изменить данные"
+                        Width="135" Height="30"
+                        Margin="0,0,10,0"
+                        Click="UpdateUserButton_Click"
+                        Style="{StaticResource AddDelete}"/>
                 <Button x:Name="DeleteUserButton"
                         Content="Удалить сотрудника"
                         Width="150" Height="30"
