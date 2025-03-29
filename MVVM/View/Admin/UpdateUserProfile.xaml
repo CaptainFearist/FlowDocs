@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:File_Manager.MVVM.View.Admin"
         mc:Ignorable="d"
         Title="Профиль пользователя"
+        Icon="/Images/FlowDocs.ico"
         Background="#F5EFE6"
         Height="420" Width="430" 
         WindowStartupLocation="CenterScreen"

@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:File_Manager.MVVM.View.Technician"
         mc:Ignorable="d"
         Title="Подтверждение"
+        Icon="/Images/FlowDocs.ico"
         Height="150" Width="300"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
