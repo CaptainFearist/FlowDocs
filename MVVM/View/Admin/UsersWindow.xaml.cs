@@ -1,4 +1,5 @@
 ﻿using File_Manager.Entities;
+using File_Manager.MVVM.View.Admin;
 using File_Manager.MVVM.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -61,6 +62,21 @@ namespace File_Manager
             Close();
         }
 
+        private async Task ReloadUsersAsync()
+        {
+            _allUsers = await _context.Users
+                .Select(emp => new EmployeeViewModel
+                {
+                    FirstName = emp.FirstName,
+                    LastName = emp.LastName,
+                    Email = emp.Email,
+                    DepartmentName = emp.Department.DepartmentName
+                })
+                .ToListAsync();
+
+            UsersListView.ItemsSource = _allUsers;
+        }
+
         private async void LoadUsersAsync()
         {
             _allUsers = await _context.Users
@@ -86,6 +102,27 @@ namespace File_Manager
                 .ToList();
 
             UsersListView.ItemsSource = filteredUsers;
+        }
+
+        private async void UpdateUserButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (UsersListView.SelectedItem is EmployeeViewModel selectedUser)
+            {
+                var userToEdit = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email == selectedUser.Email);
+
+                if (userToEdit == null)
+                {
+                    MessageBox.Show("Пользователь не найден в базе данных.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                var updateWindow = new UpdateUserProfile(userToEdit, _context);
+                if (updateWindow.ShowDialog() == true)
+                {
+                    await ReloadUsersAsync();
+                }
+            }
         }
 
         private async void DeleteUserButton_Click(object sender, RoutedEventArgs e)
