@@ -22,7 +22,7 @@
                                           Focusable="False"
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
-                                          Margin="0,-2,0,0"/>
+                                          Margin="0,-3,0,0"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
