@@ -44,7 +44,7 @@
             </StackPanel>
         </Grid>
 
-        <Border BorderBrush="#2D3142" BorderThickness="2">
+        <Border BorderBrush="#b8b5ad" BorderThickness="3,0,3,3">
             <Grid Margin="20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
