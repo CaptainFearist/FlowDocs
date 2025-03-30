@@ -8,131 +8,164 @@
         Title="Профиль пользователя"
         Icon="/Images/FlowDocs.ico"
         Background="#F5EFE6"
-        Height="420" Width="430" 
+        Height="420" Width="430"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         WindowStyle="None">
-    <Border BorderBrush="#2D3142" BorderThickness="2">
-        <Grid Margin="20">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="50"/>
-                <RowDefinition Height="45"/>
-                <RowDefinition Height="45"/>
-                <RowDefinition Height="45"/>
-                <RowDefinition Height="45"/>
-                <RowDefinition Height="45"/>
-                <RowDefinition Height="20"/>
-                <RowDefinition Height="45"/>
-            </Grid.RowDefinitions>
+    <DockPanel Background="#F5EFE6">
+        <Grid DockPanel.Dock="Top"
+              Background="#b8b5ad"
+              Height="30">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Профиль"
-                       Grid.Row="0" Grid.ColumnSpan="3"
-                       FontSize="18"
-                       FontWeight="Bold"
-                       Margin="0,10,0,10"/>
+            <StackPanel Orientation="Horizontal"
+                        Grid.Column="0"
+                        Margin="10,5">
+                <Image Source="/Images/FlowDocs.ico"
+                       Height="20" Width="20"
+                       VerticalAlignment="Center"
+                       Margin="0,0,5,0"/>
+                <TextBlock Text="Профиль"
+                           FontSize="12"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
 
-            <TextBlock Text="Имя:"
-                       FontSize="16"
-                       VerticalAlignment="Center"
-                       Grid.Row="1" Grid.Column="0"
-                       Margin="5,5,5,5"/>
-            <TextBlock x:Name="FirstNameTextBlock"
-                       FontSize="16"
-                       VerticalAlignment="Center"
-                       Grid.Row="1" Grid.Column="1"
-                       Margin="5,5,5,5"/>
+            <StackPanel Orientation="Horizontal"
+                        Grid.Column="2"
+                        HorizontalAlignment="Right"
+                        Margin="10,0">
+                <Button Style="{StaticResource CloseButtonStyle}"
+                        Click="CloseWindow"
+                        Margin="5"/>
+            </StackPanel>
+        </Grid>
 
-            <TextBlock Text="Фамилия:"
-                       FontSize="16"
-                       VerticalAlignment="Center"
-                       Grid.Row="2" Grid.Column="0"
-                       Margin="5,5,5,5"/>
-            <TextBlock x:Name="LastNameTextBlock"
-                       FontSize="16"
-                       VerticalAlignment="Center"
-                       Grid.Row="2" Grid.Column="1"
-                       Margin="5,5,5,5"/>
+        <Border BorderBrush="#2D3142" BorderThickness="2">
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="45"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="30"/>
+                </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Логин:"
-                       FontSize="16"
-                       VerticalAlignment="Center"
-                       Grid.Row="3" Grid.Column="0"
-                       Margin="5,5,5,5"/>
-            <TextBox x:Name="LoginTextBox"
-                     Grid.Row="3" Grid.Column="1"
-                     VerticalAlignment="Center"
-                     Height="35"
-                     Style="{StaticResource TextPass}" 
-                     Margin="5,5,5,5"/>
+                <TextBlock Text="Профиль"
+                           Grid.Row="0" Grid.ColumnSpan="3"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Margin="0,10,0,10"/>
 
-            <TextBlock Text="Пароль:"
-                       FontSize="16"
-                       VerticalAlignment="Center"
-                       Grid.Row="4" Grid.Column="0"
-                       Margin="5,5,5,5"/>
-            <Grid Grid.Row="4" Grid.Column="1">
-                <PasswordBox x:Name="PasswordBoxInvis"
+                <TextBlock Text="Имя:"
+                           FontSize="16"
+                           VerticalAlignment="Center"
+                           Grid.Row="1" Grid.Column="0"
+                           Margin="5,5,5,5"/>
+                <TextBlock x:Name="FirstNameTextBlock"
+                           FontSize="16"
+                           VerticalAlignment="Center"
+                           Grid.Row="1" Grid.Column="1"
+                           Margin="5,5,5,5"/>
+
+                <TextBlock Text="Фамилия:"
+                           FontSize="16"
+                           VerticalAlignment="Center"
+                           Grid.Row="2" Grid.Column="0"
+                           Margin="5,5,5,5"/>
+                <TextBlock x:Name="LastNameTextBlock"
+                           FontSize="16"
+                           VerticalAlignment="Center"
+                           Grid.Row="2" Grid.Column="1"
+                           Margin="5,5,5,5"/>
+
+                <TextBlock Text="Логин:"
+                           FontSize="16"
+                           VerticalAlignment="Center"
+                           Grid.Row="3" Grid.Column="0"
+                           Margin="5,5,5,5"/>
+                <TextBox x:Name="LoginTextBox"
+                         Grid.Row="3" Grid.Column="1"
+                         VerticalAlignment="Center"
+                         Height="35"
+                         Style="{StaticResource TextPass}"
+                         Margin="5,5,5,5"/>
+
+                <TextBlock Text="Пароль:"
+                           FontSize="16"
+                           VerticalAlignment="Center"
+                           Grid.Row="4" Grid.Column="0"
+                           Margin="5,5,5,5"/>
+                <Grid Grid.Row="4" Grid.Column="1">
+                    <PasswordBox x:Name="PasswordBoxInvis"
+                                 Height="35"
+                                 VerticalAlignment="Center"
+                                 VerticalContentAlignment="Center"
+                                 Style="{StaticResource TextPassp}"
+                                 Margin="5,5,5,5"/>
+                    <TextBox x:Name="PasswordBoxVis"
                              Height="35"
                              VerticalAlignment="Center"
                              VerticalContentAlignment="Center"
-                             Style="{StaticResource TextPassp}"
+                             Style="{StaticResource TextPass}"
+                             Visibility="Collapsed"
+                             IsReadOnly="True"
+                             Foreground="Black"
                              Margin="5,5,5,5"/>
-                <TextBox x:Name="PasswordBoxVis"
-                         Height="35"
+                    <Button Width="30" Height="30"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Margin="5,5,-30,5"
+                            MouseEnter="Button_MouseEnter"
+                            MouseLeave="Button_MouseLeave"
+                            Style="{StaticResource ShowPass}"
+                            Click="TogglePasswordVisibility"/>
+                </Grid>
+
+                <TextBlock Text="Email:"
+                           FontSize="16"
+                           VerticalAlignment="Center"
+                           Grid.Row="5" Grid.Column="0"
+                           Margin="5,5,5,5"/>
+                <TextBox x:Name="EmailTextBox"
+                         Grid.Row="5" Grid.Column="1"
                          VerticalAlignment="Center"
-                         VerticalContentAlignment="Center"
+                         Height="35"
                          Style="{StaticResource TextPass}"
-                         Visibility="Collapsed"
-                         IsReadOnly="True"
-                         Foreground="Black"
                          Margin="5,5,5,5"/>
-                <Button Width="30" Height="30"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        Margin="5,5,-30,5"
-                        MouseEnter="Button_MouseEnter"
-                        MouseLeave="Button_MouseLeave"
-                        Style="{StaticResource ShowPass}"
-                        Click="TogglePasswordVisibility"/>
+
+                <TextBlock x:Name="StatusTextBlock"
+                           Grid.Row="6" Grid.ColumnSpan="3"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="#7acc78"
+                           Visibility="Visible"/>
+
+                <StackPanel Grid.Row="7" Grid.ColumnSpan="3"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center">
+                    <Button Content="Сохранить"
+                            Margin="0,0,10,0"
+                            Click="SaveButton_Click"
+                            Style="{StaticResource MenuButton}"
+                            BorderThickness="0" Width="90"/>
+                    <Button Content="Отмена"
+                            Click="CancelButton_Click"
+                            Style="{StaticResource MenuButton}"
+                            BorderThickness="0" Width="90"/>
+                </StackPanel>
             </Grid>
-
-            <TextBlock Text="Email:"
-                       FontSize="16"
-                       VerticalAlignment="Center"
-                       Grid.Row="5" Grid.Column="0"
-                       Margin="5,5,5,5"/>
-            <TextBox x:Name="EmailTextBox"
-                     Grid.Row="5" Grid.Column="1"
-                     VerticalAlignment="Center"
-                     Height="35"
-                     Style="{StaticResource TextPass}" 
-                     Margin="5,5,5,5"/>
-
-            <TextBlock x:Name="StatusTextBlock"
-                       Grid.Row="6" Grid.ColumnSpan="3"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Foreground="#7acc78"
-                       Visibility="Visible"/>
-
-            <StackPanel Grid.Row="7" Grid.ColumnSpan="3"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Center">
-                <Button Content="Сохранить"
-                        Margin="0,0,10,0"
-                        Click="SaveButton_Click"
-                        Style="{StaticResource MenuButton}"
-                        BorderThickness="0" Width="90"/>
-                <Button Content="Отмена"
-                        Click="CancelButton_Click"
-                        Style="{StaticResource MenuButton}"
-                        BorderThickness="0" Width="90"/>
-            </StackPanel>
-        </Grid>
-    </Border>
+        </Border>
+    </DockPanel>
 </Window>
