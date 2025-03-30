@@ -20,6 +20,11 @@ namespace File_Manager.MVVM.View.Admin
             LoadUserData();
         }
 
+        private void CloseWindow(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
         private void LoadUserData()
         {
             FirstNameTextBlock.Text = _currentUser.FirstName;
