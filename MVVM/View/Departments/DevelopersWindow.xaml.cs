@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using File_Manager.MVVM.View.Messenger;
 
 namespace File_Manager
 {
@@ -289,18 +290,10 @@ namespace File_Manager
             }
         }
 
-        private void DeptUsers_Click(object sender, RoutedEventArgs e)
+        private void ContactButton_Click(object sender, RoutedEventArgs e)
         {
-            var department = _context.Departments.FirstOrDefault(d => d.DepartmentId == _departmentId);
-            if (department != null)
-            {
-                var departmentUsersWindow = new DepartmentUsersWindow(department.DepartmentName);
-                departmentUsersWindow.Show();
-            }
-            else
-            {
-                MessageBox.Show("Не удалось найти отдел.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+            ChatsWindow chatsWindow = new ChatsWindow();
+            chatsWindow.Show();
         }
 
         private void Search_GotFocus(object sender, RoutedEventArgs e)
