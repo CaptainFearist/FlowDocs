@@ -3,14 +3,18 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using File_Manager.Entities;
 using File_Manager.MVVM.ViewModel;
+using File_Manager.MVVM.Model;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.ObjectModel;
 
 namespace File_Manager.MVVM.View.Messenger
 {
     public partial class ChatsWindow : Window
     {
         private readonly IT_DepartmentsContext _context;
-        private List<EmployeeViewModel> _allUsers;
+        private List<EmployeeViewModel> _allUsers = new List<EmployeeViewModel>();
+
+        private ObservableCollection<ChatModel> _chats = new ObservableCollection<ChatModel>();
 
         public ChatsWindow()
         {
@@ -23,6 +27,8 @@ namespace File_Manager.MVVM.View.Messenger
 
             _context = new IT_DepartmentsContext(options);
             LoadUsersAsync();
+
+            ChatsListView.ItemsSource = _chats;
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -68,34 +74,22 @@ namespace File_Manager.MVVM.View.Messenger
                     .Select(emp => new EmployeeViewModel
                     {
                         FirstName = emp.FirstName,
-                        LastName = emp.LastName,
-                        Email = emp.Email,
-                        DepartmentName = emp.Department.DepartmentName
+                        LastName = emp.LastName
                     })
                     .ToListAsync();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при загрузке пользователей: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                _allUsers = new List<EmployeeViewModel>(); // Инициализация пустого списка в случае ошибки
+                _allUsers = new List<EmployeeViewModel>();
             }
         }
 
         private void ChatsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ChatsListView.SelectedItem != null)
+            if (ChatsListView.SelectedItem is ChatModel selectedChat)
             {
-                if (ChatsListView.SelectedItem is Chat selectedChat)
-                {
-                    ChatTitle.Text = selectedChat.Name;
-                }
-                else
-                {
-                    ChatTitle.Text = "Выбран чат";
-                }
-
-                MessagesList.ItemsSource = null;
-                Console.WriteLine("Выбран чат: " + ChatsListView.SelectedItem);
+                ChatTitle.Text = $"{selectedChat.FirstName} {selectedChat.LastName}";
             }
         }
 
@@ -117,31 +111,22 @@ namespace File_Manager.MVVM.View.Messenger
             }
         }
 
+
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string searchQuery = "";
-            if (SearchChatsBox.Text != null)
+            string searchQuery = SearchChatsBox.Text?.ToLower() ?? "";
+
+            if (string.IsNullOrWhiteSpace(searchQuery))
             {
-                searchQuery = SearchChatsBox.Text.ToLower();
-            }
-
-            if (_allUsers != null)
-            {
-                var filteredUsers = _allUsers
-                    .Where(user => user != null &&
-                                   (user.FirstName != null && user.FirstName.ToLower().Contains(searchQuery) ||
-                                    user.LastName != null && user.LastName.ToLower().Contains(searchQuery)))
-                    .ToList();
-
-                var displayUsers = filteredUsers
-                    .Select(user => new { Name = $"{user.FirstName} {user.LastName}" })
-                    .ToList();
-
-                ChatsListView.ItemsSource = displayUsers;
+                ChatsListView.ItemsSource = _chats;
             }
             else
             {
-                ChatsListView.ItemsSource = new List<object>();
+                var filteredUsers = _allUsers
+                    .Where(user => (user.FirstName + " " + user.LastName).ToLower().Contains(searchQuery))
+                    .ToList();
+
+                ChatsListView.ItemsSource = filteredUsers;
             }
         }
 
