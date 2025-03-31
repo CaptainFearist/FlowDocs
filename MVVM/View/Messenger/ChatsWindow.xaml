@@ -97,27 +97,30 @@
                 </Grid>
 
                 <ListView x:Name="ChatsListView"
-                          Grid.Row="1"
-                          BorderThickness="0"
-                          SelectionChanged="ChatsListView_SelectionChanged"
-                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                          Background="Transparent">
+          Grid.Row="1"
+          BorderThickness="0"
+          SelectionChanged="ChatsListView_SelectionChanged"
+          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+          Background="Transparent">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal"
-                                        Margin="10">
+                            <StackPanel Orientation="Horizontal" Margin="10">
                                 <Ellipse Width="40" Height="40"
-                                         Fill="LightBlue"
-                                         Margin="0,0,10,0"/>
+                         Fill="LightBlue"
+                         Margin="0,0,10,0"/>
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Name}"
-                                               FontSize="16"
-                                               FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding FirstName}"
+                               FontSize="16"
+                               FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding LastName}"
+                               FontSize="14"
+                               Foreground="Gray"/>
                                 </StackPanel>
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+
             </Grid>
 
             <Grid Grid.Column="1" Background="#E8E8E8"/>
