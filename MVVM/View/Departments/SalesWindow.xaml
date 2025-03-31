@@ -102,7 +102,7 @@
                         Margin="5">
 
                 <Button x:Name="ContactButton"
-                        Content="Связь с командой"
+                        Content="Чаты"
                         Margin="5"
                         Width="165" Height="50"
                         FontSize="16"
