@@ -22,6 +22,7 @@
                 <ResourceDictionary Source="Themes/CloseButtonStyle.xaml"/>
                 <ResourceDictionary Source="Themes/MinimizeButtonStyle.xaml"/>
                 <ResourceDictionary Source="Themes/MaximizeRestoreButtonStyle.xaml"/>
+                <ResourceDictionary Source="Themes/MaterialDesignOutlinedTextBox.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
