@@ -274,26 +274,22 @@ namespace File_Manager
 
         private void ContactButton_Click(object sender, RoutedEventArgs e)
         {
-            string telegramChatUrl = "https://t.me/recrent";
-
-            try
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = telegramChatUrl,
-                    UseShellExecute = true
-                });
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show("Не удалось открыть ссылку в Telegram. Пожалуйста, проверьте подключение к интернету.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void ContactButton_Click(object sender, RoutedEventArgs e)
-        {
             ChatsWindow chatsWindow = new ChatsWindow();
             chatsWindow.Show();
+        }
+
+        private void DeptUsers_Click(object sender, RoutedEventArgs e)
+        {
+            var department = _context.Departments.FirstOrDefault(d => d.DepartmentId == _departmentId);
+            if (department != null)
+            {
+                var departmentUsersWindow = new DepartmentUsersWindow(department.DepartmentName);
+                departmentUsersWindow.Show();
+            }
+            else
+            {
+                MessageBox.Show("Не удалось найти отдел.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void Search_GotFocus(object sender, RoutedEventArgs e)
