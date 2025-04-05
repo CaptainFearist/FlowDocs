@@ -26,4 +26,7 @@ public partial class File
     public virtual FileType FileType { get; set; }
 
     public virtual User User { get; set; }
+
+
+    public virtual ICollection<ChatAttachment> ChatAttachments { get; set; } = new List<ChatAttachment>();
 }
