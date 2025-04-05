@@ -1,7 +1,13 @@
 ﻿using File_Manager.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using Microsoft.Win32;
 
 namespace File_Manager.MVVM.View.Admin
 {
@@ -12,12 +18,15 @@ namespace File_Manager.MVVM.View.Admin
     {
         private User _currentUser;
         private IT_DepartmentsContext _context;
+        private string _newImagePath;
+
         public UpdateUserProfile(User user, IT_DepartmentsContext context)
         {
             InitializeComponent();
             _currentUser = user;
             _context = context;
             LoadUserData();
+            LoadUserProfileImage();
         }
 
         private void CloseWindow(object sender, RoutedEventArgs e)
@@ -38,6 +47,35 @@ namespace File_Manager.MVVM.View.Admin
             PasswordBoxVis.Visibility = Visibility.Collapsed;
         }
 
+        private void LoadUserProfileImage()
+        {
+            if (!string.IsNullOrEmpty(_currentUser.ImagePath))
+            {
+                UserProfileImageBrush.ImageSource = new BitmapImage(new Uri(_currentUser.ImagePath));
+            }
+            else
+            {
+                try
+                {
+                    UserProfileImageBrush.ImageSource = new BitmapImage(new Uri("pack://application:,,,/Images/default_user.png"));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Не удалось загрузить изображение по умолчанию: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void UserProfileImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Изображения (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg|Все файлы (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {                _newImagePath = openFileDialog.FileName;
+                UserProfileImageBrush.ImageSource = new BitmapImage(new Uri(_newImagePath));
+            }
+        }
+
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             _currentUser.FirstName = FirstNameTextBlock.Text;
@@ -46,24 +84,26 @@ namespace File_Manager.MVVM.View.Admin
             _currentUser.Email = EmailTextBox.Text;
 
             string password = PasswordBoxVis.Text;
+            _currentUser.Password = password;
 
             try
             {
                 _context.Users.Attach(_currentUser);
-                _currentUser.Password = password;
+                _context.Entry(_currentUser).State = EntityState.Modified;
 
-                _context.Entry(_currentUser).Property(u => u.FirstName).IsModified = true;
-                _context.Entry(_currentUser).Property(u => u.LastName).IsModified = true;
-                _context.Entry(_currentUser).Property(u => u.Username).IsModified = true;
-                _context.Entry(_currentUser).Property(u => u.Email).IsModified = true;
-                _context.Entry(_currentUser).Property(u => u.Password).IsModified = true;
+                if (!string.IsNullOrEmpty(_newImagePath))
+                {
+                    _currentUser.ImagePath = _newImagePath;
+                    _context.Entry(_currentUser).Property(u => u.ImagePath).IsModified = true;
+                }
 
                 _context.SaveChanges();
 
                 StatusTextBlock.Text = "Изменения сохранены.";
                 StatusTextBlock.Visibility = Visibility.Visible;
+                StatusTextBlock.Foreground = System.Windows.Media.Brushes.Green;
 
-                System.Threading.Tasks.Task.Delay(3000).ContinueWith(_ =>
+                Task.Delay(3000).ContinueWith(_ =>
                 {
                     Dispatcher.Invoke(() => this.DialogResult = true);
                 });
@@ -83,8 +123,8 @@ namespace File_Manager.MVVM.View.Admin
 
             PasswordBoxVis.Visibility = Visibility.Collapsed;
             PasswordBoxInvis.Visibility = Visibility.Visible;
+            _newImagePath = null;
         }
-
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
