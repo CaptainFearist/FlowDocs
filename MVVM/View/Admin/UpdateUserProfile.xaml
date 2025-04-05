@@ -67,7 +67,8 @@
                         CornerRadius="50"
                         HorizontalAlignment="Center" VerticalAlignment="Center"
                         MouseLeftButtonUp="UserProfileImage_MouseLeftButtonUp">
-                    <Ellipse>
+                    <Ellipse Stroke="#2D3142"
+                             StrokeThickness="1">
                         <Ellipse.Fill>
                             <ImageBrush x:Name="UserProfileImageBrush"
                                         Stretch="UniformToFill"/>
@@ -75,7 +76,11 @@
                     </Ellipse>
                 </Border>
 
-                <Grid Grid.Row="1" Grid.ColumnSpan="3"/>
+                <Border Grid.Row="1" Grid.ColumnSpan="3"
+                        VerticalAlignment="Bottom"
+                        BorderBrush="#2D3142"
+                        BorderThickness="0,0,0,1">
+                </Border>
 
                 <TextBlock Text="Имя:"
                            FontSize="16"
