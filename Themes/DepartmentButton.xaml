@@ -7,21 +7,55 @@
     <SolidColorBrush x:Key="DepartmentButton.Foreground" Color="#2D3142"/>
 
     <Style x:Key="DepartmentButton" TargetType="Button">
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <ScaleTransform/>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="border" 
-                            CornerRadius="10" 
-                            Background="{TemplateBinding Background}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
+                    <Border x:Name="border"
+                            CornerRadius="10"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="1"
                             SnapsToDevicePixels="true">
-                        <ContentPresenter x:Name="contentPresenter" 
-                                          Focusable="False" 
-                                          HorizontalAlignment="Left" 
-                                          VerticalAlignment="Center" 
-                                          Margin="10,0,0,0"/>
+                        <ContentPresenter x:Name="contentPresenter"
+                                          Focusable="False"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}"/>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" Value="{StaticResource DepartmentButton.MouseOver.Background}"/>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="1.03" Duration="0:0:0.15"/>
+                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="1.03" Duration="0:0:0.15"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                         To="1.0" Duration="0:0:0.1"/>
+                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                         To="1.0" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter Property="Background" Value="{StaticResource DepartmentButton.Pressed.Background}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -29,17 +63,8 @@
         <Setter Property="Background" Value="{StaticResource DepartmentButton.Default.Background}"/>
         <Setter Property="Foreground" Value="{StaticResource DepartmentButton.Foreground}"/>
         <Setter Property="FontSize" Value="14"/>
-        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Padding" Value="5,0,0,0"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
-
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="true">
-                <Setter Property="Background" Value="{StaticResource DepartmentButton.MouseOver.Background}"/>
-            </Trigger>
-            <Trigger Property="IsPressed" Value="true">
-                <Setter Property="Background" Value="{StaticResource DepartmentButton.Pressed.Background}"/>
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>
