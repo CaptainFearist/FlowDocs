@@ -71,17 +71,49 @@ namespace File_Manager.MVVM.View.Messenger
             try
             {
                 _allUsers = await _context.Users
-                    .Select(emp => new EmployeeViewModel
+                    .Select(u => new EmployeeViewModel
                     {
-                        FirstName = emp.FirstName,
-                        LastName = emp.LastName
-                    })
-                    .ToListAsync();
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                    }).ToListAsync();
+
+                // _chats.Clear();
+                // ChatsListView.ItemsSource = _chats;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при загрузке пользователей: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 _allUsers = new List<EmployeeViewModel>();
+            }
+        }
+
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string searchQuery = SearchChatsBox.Text?.ToLower() ?? "";
+
+            if (string.IsNullOrWhiteSpace(searchQuery))
+            {
+                _chats.Clear();
+                ChatsListView.ItemsSource = _chats;
+            }
+            else
+            {
+                var filteredUsers = _allUsers
+                    .Where(user => (user.FirstName + " " + user.LastName).ToLower().Contains(searchQuery))
+                    .Select(u => new ChatModel
+                    {
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        ImagePath = _context.Users.FirstOrDefault(dbUser => dbUser.FirstName == u.FirstName && dbUser.LastName == u.LastName)?.ImagePath
+                    })
+                    .ToList();
+
+                _chats.Clear();
+                foreach (var user in filteredUsers)
+                {
+                    _chats.Add(user);
+                }
+                ChatsListView.ItemsSource = _chats;
             }
         }
 
@@ -108,25 +140,6 @@ namespace File_Manager.MVVM.View.Messenger
             {
                 Console.WriteLine("Отправлено сообщение: " + message);
                 MessageInput.Clear();
-            }
-        }
-
-
-        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            string searchQuery = SearchChatsBox.Text?.ToLower() ?? "";
-
-            if (string.IsNullOrWhiteSpace(searchQuery))
-            {
-                ChatsListView.ItemsSource = _chats;
-            }
-            else
-            {
-                var filteredUsers = _allUsers
-                    .Where(user => (user.FirstName + " " + user.LastName).ToLower().Contains(searchQuery))
-                    .ToList();
-
-                ChatsListView.ItemsSource = filteredUsers;
             }
         }
 
