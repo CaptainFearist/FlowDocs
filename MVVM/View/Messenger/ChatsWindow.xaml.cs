@@ -234,6 +234,11 @@ namespace File_Manager.MVVM.View.Messenger
             }
         }
 
+        private void AttachFile_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void MessageInput_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(MessageInput.Text))
