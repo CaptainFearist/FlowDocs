@@ -26,6 +26,7 @@
                 <ResourceDictionary Source="Themes/Messenger/MaterialDesignOutlinedTextBox.xaml"/>
                 <ResourceDictionary Source="Themes/Messenger/SendMessageButtonStyle.xaml"/>
                 <ResourceDictionary Source="Themes/Messenger/ListViewStyles.xaml"/>
+                <ResourceDictionary Source="Themes/Messenger/ChatItemStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
