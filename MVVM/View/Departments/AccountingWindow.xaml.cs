@@ -4,7 +4,6 @@ using File_Manager.MVVM.View.Technician;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 using System.Windows;
-using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Input;
 using File_Manager.MVVM.View.Messenger;
