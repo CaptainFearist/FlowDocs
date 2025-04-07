@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
@@ -11,9 +10,9 @@ namespace File_Manager.Core.Services
         {
             if (value is bool isCurrentUser && isCurrentUser)
             {
-                return HorizontalAlignment.Right; // Для текущего пользователя
+                return HorizontalAlignment.Right;
             }
-            return HorizontalAlignment.Left; // Для других пользователей
+            return HorizontalAlignment.Left;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
