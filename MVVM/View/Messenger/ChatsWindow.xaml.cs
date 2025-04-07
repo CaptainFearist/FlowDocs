@@ -1,22 +1,29 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using File_Manager.Entities;
 using File_Manager.MVVM.ViewModel;
 using File_Manager.MVVM.Model;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace File_Manager.MVVM.View.Messenger
 {
     public partial class ChatsWindow : Window
     {
         private readonly IT_DepartmentsContext _context;
+        private User _currentUser;
         private List<EmployeeViewModel> _allUsers = new List<EmployeeViewModel>();
-
         private ObservableCollection<ChatModel> _chats = new ObservableCollection<ChatModel>();
+        private ChatModel _selectedChat;
+        private bool isLoadingMessages = false;
 
-        public ChatsWindow()
+        public ChatsWindow(User currentUser)
         {
             InitializeComponent();
             var options = new DbContextOptionsBuilder<IT_DepartmentsContext>()
@@ -25,45 +32,11 @@ namespace File_Manager.MVVM.View.Messenger
                               "TrustServerCertificate=True")
                 .Options;
 
+            _currentUser = currentUser;
             _context = new IT_DepartmentsContext(options);
             LoadUsersAsync();
-
             ChatsListView.ItemsSource = _chats;
-        }
-
-        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                DragMove();
-            }
-        }
-
-        private void MinimizeWindow(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        private void MaximizeRestoreWindow(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Maximized)
-            {
-                WindowState = WindowState.Normal;
-            }
-            else
-            {
-                WindowState = WindowState.Maximized;
-            }
-        }
-
-        private void CloseWindow(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
-        public class Chat
-        {
-            public string Name { get; set; }
+            MessagesList.ItemsSource = null;
         }
 
         private async void LoadUsersAsync()
@@ -71,75 +44,197 @@ namespace File_Manager.MVVM.View.Messenger
             try
             {
                 _allUsers = await _context.Users
+                    .Where(u => u.UserId != _currentUser.UserId)
                     .Select(u => new EmployeeViewModel
                     {
+                        UserId = u.UserId,
                         FirstName = u.FirstName,
                         LastName = u.LastName,
+                        ImagePath = u.ImagePath
                     }).ToListAsync();
 
-                // _chats.Clear();
-                // ChatsListView.ItemsSource = _chats;
+                _chats.Clear();
+                foreach (var user in _allUsers)
+                {
+                    _chats.Add(new ChatModel
+                    {
+                        ChatId = user.UserId,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        ImagePath = user.ImagePath,
+                        Messages = new ObservableCollection<MessageModel>()
+                    });
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при загрузке пользователей: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                Debug.WriteLine($"LoadUsersAsync ERROR: {ex.ToString()}");
                 _allUsers = new List<EmployeeViewModel>();
             }
         }
 
-        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        private async void ChatsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string searchQuery = SearchChatsBox.Text?.ToLower() ?? "";
-
-            if (string.IsNullOrWhiteSpace(searchQuery))
+            if (ChatsListView.SelectedItem is ChatModel selectedUserEntry)
             {
-                _chats.Clear();
-                ChatsListView.ItemsSource = _chats;
+                int otherUserId = selectedUserEntry.ChatId;
+
+                try
+                {
+                    int actualChatId = await GetOrCreateChatAsync(otherUserId);
+
+                    if (actualChatId > 0)
+                    {
+                        _selectedChat = selectedUserEntry;
+                        _selectedChat.ChatId = actualChatId;
+
+                        _selectedChat.Messages.Clear();
+                        MessagesList.ItemsSource = _selectedChat.Messages;
+
+                        ChatTitle.Text = $"{_selectedChat.FirstName} {_selectedChat.LastName}";
+
+                        await LoadMessagesForChat(actualChatId);
+                    }
+                    else
+                    {
+                        _selectedChat = null;
+                        MessagesList.ItemsSource = null;
+                        ChatTitle.Text = "Выберите чат";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при выборе чата: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Debug.WriteLine($"ChatsListView_SelectionChanged ОШИБКА: {ex.ToString()}");
+                    _selectedChat = null;
+                    MessagesList.ItemsSource = null;
+                    ChatTitle.Text = "Выберите чат";
+                }
             }
             else
             {
-                var filteredUsers = _allUsers
-                    .Where(user => (user.FirstName + " " + user.LastName).ToLower().Contains(searchQuery))
-                    .Select(u => new ChatModel
-                    {
-                        FirstName = u.FirstName,
-                        LastName = u.LastName,
-                        ImagePath = _context.Users.FirstOrDefault(dbUser => dbUser.FirstName == u.FirstName && dbUser.LastName == u.LastName)?.ImagePath
-                    })
-                    .ToList();
+                _selectedChat = null;
+                MessagesList.ItemsSource = null;
+                ChatTitle.Text = "Выберите чат";
+            }
+        }
 
-                _chats.Clear();
-                foreach (var user in filteredUsers)
+        private async Task<int> GetOrCreateChatAsync(int otherUserId)
+        {
+            var existingChat = await _context.Chats
+                .Include(c => c.ChatParticipants)
+                .Where(c => c.ChatParticipants.Any(p => p.UserId == _currentUser.UserId) &&
+                            c.ChatParticipants.Any(p => p.UserId == otherUserId) &&
+                            c.ChatParticipants.Count == 2)
+                .FirstOrDefaultAsync();
+
+            if (existingChat != null)
+            {
+                Debug.WriteLine($"Найден существующий чат. ChatID: {existingChat.ChatId}");
+                return existingChat.ChatId;
+            }
+            else
+            {
+                Debug.WriteLine($"Существующий чат не найден. Создание нового чата между пользователем {_currentUser.UserId} и пользователем {otherUserId}.");
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
                 {
-                    _chats.Add(user);
+                    var newChat = new Chat
+                    {
+                        ChatName = $"Чат между {_currentUser.UserId} и {otherUserId}",
+                        CreatedDate = DateTime.Now
+                    };
+                    _context.Chats.Add(newChat);
+                    await _context.SaveChangesAsync();
+
+                    int newChatId = newChat.ChatId;
+                    Debug.WriteLine($"Создана новая сущность Chat. ChatID: {newChatId}");
+
+                    var participant1 = new ChatParticipant { ChatId = newChatId, UserId = _currentUser.UserId };
+                    var participant2 = new ChatParticipant { ChatId = newChatId, UserId = otherUserId };
+                    _context.ChatParticipants.AddRange(participant1, participant2);
+                    await _context.SaveChangesAsync();
+                    Debug.WriteLine($"Добавление участников в ChatID: {newChatId}");
+
+                    await transaction.CommitAsync();
+                    return newChatId;
                 }
-                ChatsListView.ItemsSource = _chats;
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    Debug.WriteLine($"ОШИБКА при создании чата: {ex.ToString()}");
+                    MessageBox.Show($"Не удалось создать запись чата в базе данных: {ex.Message}", "Ошибка БД", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return 0;
+                }
             }
         }
 
-        private void ChatsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async Task LoadMessagesForChat(int chatId)
         {
-            if (ChatsListView.SelectedItem is ChatModel selectedChat)
+            if (isLoadingMessages) return;
+            isLoadingMessages = true;
+
+            try
             {
-                ChatTitle.Text = $"{selectedChat.FirstName} {selectedChat.LastName}";
+                var messages = await _context.Messages
+                    .Where(m => m.ChatId == chatId)
+                    .OrderBy(m => m.SentDate)
+                    .Include(m => m.Sender)
+                    .ToListAsync();
+
+                var messageModels = messages.Select(m => new MessageModel
+                {
+                    SenderName = $"{m.Sender.FirstName} {m.Sender.LastName}",
+                    Content = m.Content,
+                    SentDate = m.SentDate,
+                    IsSenderCurrentUser = m.SenderId == _currentUser.UserId
+                }).ToList();
+
+                _selectedChat.Messages.Clear();
+                foreach (var message in messageModels)
+                {
+                    _selectedChat.Messages.Add(message);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Ошибка при загрузке сообщений: {ex.Message}");
+            }
+            finally
+            {
+                isLoadingMessages = false;
             }
         }
 
-        private void MessageInput_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                SendMessage_Click(sender, e);
-            }
-        }
-
-        private void SendMessage_Click(object sender, RoutedEventArgs e)
+        private async void SendMessage_Click(object sender, RoutedEventArgs e)
         {
             string message = MessageInput.Text;
-            if (!string.IsNullOrEmpty(message))
+
+            if (!string.IsNullOrEmpty(message) && _selectedChat != null)
             {
-                Console.WriteLine("Отправлено сообщение: " + message);
-                MessageInput.Clear();
+                var currentUser = _context.Users.FirstOrDefault(u => u.UserId == _currentUser.UserId);
+
+                if (currentUser != null)
+                {
+                    var newMessage = new Message
+                    {
+                        SenderId = currentUser.UserId,
+                        ChatId = _selectedChat.ChatId,
+                        Content = message,
+                        SentDate = DateTime.Now
+                    };
+
+                    _context.Messages.Add(newMessage);
+                    await _context.SaveChangesAsync();
+
+                    LoadMessagesForChat(_selectedChat.ChatId);
+                    MessageInput.Clear();
+                }
+                else
+                {
+                    MessageBox.Show("Не удалось найти пользователя для отправки сообщения.");
+                }
             }
         }
 
@@ -155,12 +250,47 @@ namespace File_Manager.MVVM.View.Messenger
             }
         }
 
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string searchQuery = SearchChatsBox.Text?.ToLower() ?? "";
+
+            var filteredUserModels = _allUsers
+                     .Where(user => (user.FirstName + " " + user.LastName).ToLower().Contains(searchQuery))
+                     .Select(u => new ChatModel
+                     {
+                         ChatId = u.UserId,
+                         FirstName = u.FirstName,
+                         LastName = u.LastName,
+                         ImagePath = u.ImagePath,
+                         Messages = new ObservableCollection<MessageModel>()
+                     }).ToList();
+
+            _chats.Clear();
+            foreach (var userModel in filteredUserModels)
+            {
+                _chats.Add(userModel);
+            }
+
+            if (string.IsNullOrWhiteSpace(searchQuery))
+            {
+                _chats.Clear();
+                foreach (var user in _allUsers)
+                {
+                    _chats.Add(new ChatModel
+                    {
+                        ChatId = user.UserId,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        ImagePath = user.ImagePath,
+                        Messages = new ObservableCollection<MessageModel>()
+                    });
+                }
+            }
+        }
+
         private void Search_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(SearchChatsBox.Text))
-            {
-                SearchHint.Visibility = Visibility.Collapsed;
-            }
+            SearchHint.Visibility = Visibility.Collapsed;
         }
 
         private void Search_LostFocus(object sender, RoutedEventArgs e)
@@ -168,8 +298,38 @@ namespace File_Manager.MVVM.View.Messenger
             if (string.IsNullOrWhiteSpace(SearchChatsBox.Text))
             {
                 SearchHint.Visibility = Visibility.Visible;
-                SearchChatsBox.Text = string.Empty;
             }
+        }
+
+        private void MessageInput_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && !string.IsNullOrWhiteSpace(MessageInput.Text))
+            {
+                SendMessage_Click(sender, e);
+            }
+        }
+
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                this.DragMove();
+            }
+        }
+
+        private void MinimizeWindow(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void MaximizeRestoreWindow(object sender, RoutedEventArgs e)
+        {
+            WindowState = (WindowState == WindowState.Maximized) ? WindowState.Normal : WindowState.Maximized;
+        }
+
+        private void CloseWindow(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }
