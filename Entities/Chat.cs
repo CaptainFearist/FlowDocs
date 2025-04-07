@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-
-namespace File_Manager.Entities;
+﻿namespace File_Manager.Entities;
 
 public partial class Chat
 {
