@@ -6,6 +6,6 @@
         public string Content { get; set; }
         public DateTime SentDate { get; set; }
         public bool IsSenderCurrentUser { get; set; }
+        public AttachedFileInMessage Attachment { get; set; }
     }
-
 }
