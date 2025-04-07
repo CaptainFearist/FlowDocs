@@ -274,12 +274,10 @@ namespace File_Manager
 
         private void ContactButton_Click(object sender, RoutedEventArgs e)
         {
-            // Получаем текущего пользователя из базы данных по _userId
             var currentUser = _context.Users.FirstOrDefault(u => u.UserId == _userId);
 
             if (currentUser != null)
             {
-                // Передаем текущего пользователя в конструктор ChatsWindow
                 ChatsWindow chatsWindow = new ChatsWindow(currentUser);
                 chatsWindow.Show();
             }
