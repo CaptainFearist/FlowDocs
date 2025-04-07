@@ -2,9 +2,6 @@
 using File_Manager.MVVM.View.Admin;
 using File_Manager.MVVM.ViewModel;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
