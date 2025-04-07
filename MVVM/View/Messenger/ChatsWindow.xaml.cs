@@ -7,6 +7,7 @@ using File_Manager.MVVM.ViewModel;
 using File_Manager.MVVM.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using Microsoft.Win32;
 
 namespace File_Manager.MVVM.View.Messenger
 {
@@ -16,6 +17,7 @@ namespace File_Manager.MVVM.View.Messenger
         private User _currentUser;
         private List<EmployeeViewModel> _allUsers = new List<EmployeeViewModel>();
         private ObservableCollection<ChatModel> _chats = new ObservableCollection<ChatModel>();
+        private ObservableCollection<FileViewModel> _currentAttachments = new ObservableCollection<FileViewModel>();
         private ChatModel _selectedChat;
         private bool isLoadingMessages = false;
 
@@ -33,7 +35,16 @@ namespace File_Manager.MVVM.View.Messenger
             LoadUsersAsync();
             ChatsListView.ItemsSource = _chats;
             MessagesList.ItemsSource = null;
+            AttachedFilesListBox.ItemsSource = _currentAttachments;
         }
+
+        private static readonly Dictionary<string, int> FileTypeMappings = new Dictionary<string, int>
+        {
+            { ".doc", 1 }, { ".docx", 1 }, { ".pdf", 1 }, { ".txt", 1 }, { ".rtf", 1 },
+            { ".xls", 1 }, { ".xlsx", 1 }, { ".ppt", 1 }, { ".pptx", 1 },
+            { ".jpg", 2 }, { ".jpeg", 2 }, { ".png", 2 }, { ".gif", 2 },
+            { ".bmp", 2 }, { ".tiff", 2 }, { ".mp4", 3 }
+        };
 
         private async void LoadUsersAsync()
         {
@@ -177,6 +188,8 @@ namespace File_Manager.MVVM.View.Messenger
                     .Where(m => m.ChatId == chatId)
                     .OrderBy(m => m.SentDate)
                     .Include(m => m.Sender)
+                    .Include(m => m.ChatAttachments)
+                        .ThenInclude(ca => ca.File) // Включаем связанный File
                     .ToListAsync();
 
                 var messageModels = messages.Select(m => new MessageModel
@@ -184,7 +197,14 @@ namespace File_Manager.MVVM.View.Messenger
                     SenderName = $"{m.Sender.FirstName} {m.Sender.LastName}",
                     Content = m.Content,
                     SentDate = m.SentDate,
-                    IsSenderCurrentUser = m.SenderId == _currentUser.UserId
+                    IsSenderCurrentUser = m.SenderId == _currentUser.UserId,
+                    Attachment = m.ChatAttachments.Count > 0 && m.ChatAttachments.First().File != null ? new AttachedFileInMessage
+                    {
+                        AttachmentId = m.ChatAttachments.First().ChatAttachmentId,
+                        FileName = m.ChatAttachments.First().File.FileName,
+                        FilePath = m.ChatAttachments.First().File.FilePath,
+                        FileId = m.ChatAttachments.First().File.FileId
+                    } : null
                 }).ToList();
 
                 _selectedChat.Messages.Clear();
@@ -224,6 +244,42 @@ namespace File_Manager.MVVM.View.Messenger
                     _context.Messages.Add(newMessage);
                     await _context.SaveChangesAsync();
 
+                    foreach (var attachmentViewModel in _currentAttachments)
+                    {
+                        string fileExtension = System.IO.Path.GetExtension(attachmentViewModel.FileName).ToLowerInvariant();
+                        int? fileTypeId = FileTypeMappings.TryGetValue(fileExtension, out var typeId) ? typeId : null;
+
+                        if (!fileTypeId.HasValue)
+                        {
+                            MessageBox.Show($"Не удалось определить тип файла для '{attachmentViewModel.FileName}'.");
+                            continue; // Пропустить этот файл
+                        }
+
+                        var newFile = await _context.Files.FirstOrDefaultAsync(f => f.FilePath == attachmentViewModel.FilePath && f.FileName == attachmentViewModel.FileName && f.UserId == _currentUser.UserId && f.FileTypeId == fileTypeId.Value);
+
+                        if (newFile == null)
+                        {
+                            newFile = new File
+                            {
+                                FileName = attachmentViewModel.FileName,
+                                FilePath = attachmentViewModel.FilePath,
+                                UploadDate = DateTime.Now,
+                                UserId = _currentUser.UserId,
+                                FileTypeId = fileTypeId.Value
+                            };
+                            _context.Files.Add(newFile);
+                            await _context.SaveChangesAsync();
+                        }
+
+                        var newChatAttachment = new ChatAttachment
+                        {
+                            MessageId = newMessage.MessageId,
+                            FileId = newFile.FileId
+                        };
+                        _context.ChatAttachments.Add(newChatAttachment);
+                    }
+                    await _context.SaveChangesAsync();
+
                     LoadMessagesForChat(_selectedChat.ChatId);
                     MessageInput.Clear();
                 }
@@ -232,11 +288,44 @@ namespace File_Manager.MVVM.View.Messenger
                     MessageBox.Show("Не удалось найти пользователя для отправки сообщения.");
                 }
             }
+            _currentAttachments.Clear();
         }
 
         private void AttachFile_Click(object sender, RoutedEventArgs e)
         {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                _currentAttachments.Add(new FileViewModel
+                {
+                    FileName = System.IO.Path.GetFileName(openFileDialog.FileName),
+                    FilePath = openFileDialog.FileName
+                });
+            }
+        }
 
+        private void RemoveAttachment_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is FileViewModel fileToRemove)
+            {
+                _currentAttachments.Remove(fileToRemove);
+            }
+        }
+
+        private void DownloadFileTextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is TextBlock textBlock && textBlock.DataContext is MessageModel message && message.Attachment != null)
+            {
+                string filePath = message.Attachment.FilePath;
+                try
+                {
+                    Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Не удалось открыть файл: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         private void MessageInput_TextChanged(object sender, TextChangedEventArgs e)
