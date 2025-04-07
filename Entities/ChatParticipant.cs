@@ -1,6 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-
 namespace File_Manager.Entities;
 
 public partial class ChatParticipant
