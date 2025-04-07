@@ -273,9 +273,21 @@ namespace File_Manager
 
         private void ContactButton_Click(object sender, RoutedEventArgs e)
         {
-            ChatsWindow chatsWindow = new ChatsWindow();
-            chatsWindow.Show();
+            // Получаем текущего пользователя из базы данных по _userId
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserId == _userId);
+
+            if (currentUser != null)
+            {
+                // Передаем текущего пользователя в конструктор ChatsWindow
+                ChatsWindow chatsWindow = new ChatsWindow(currentUser);
+                chatsWindow.Show();
+            }
+            else
+            {
+                MessageBox.Show("Пользователь не найден.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
 
         private void DeptUsers_Click(object sender, RoutedEventArgs e)
         {
