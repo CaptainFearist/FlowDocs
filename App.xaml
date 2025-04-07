@@ -28,6 +28,8 @@
                 <ResourceDictionary Source="Themes/Messenger/ListViewStyles.xaml"/>
                 <ResourceDictionary Source="Themes/Messenger/ChatItemStyles.xaml"/>
                 <ResourceDictionary Source="Themes/Messenger/AttachFileButtonStyle.xaml"/>
+                <ResourceDictionary Source="Themes/Messenger/AttachedFileItemStyle.xaml"/>
+                <ResourceDictionary Source="Themes/Messenger/RoundedDeleteButtonStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
