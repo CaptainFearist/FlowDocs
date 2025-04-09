@@ -19,6 +19,8 @@
     <Window.Resources>
         <core:BoolToAlignmentConverter x:Key="BoolToAlignmentConverter"/>
         <core:AttachmentToVisibilityConverter  x:Key="NullToVisibilityConverter"/>
+        <core:BoolToBackgroundConverter x:Key="BoolToBackgroundConverter" />
+        <core:SenderNameForegroundConverter x:Key="SenderNameForegroundConverter" />
     </Window.Resources>
 
     <DockPanel Background="#F5EFE6">
@@ -162,42 +164,42 @@
                            Margin="15"/>
 
                 <ListBox x:Name="MessagesList"
-                         Grid.Row="1"
-                         Margin="10,0,10,10"
-                         Background="Transparent"
-                         BorderThickness="0"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                         ScrollViewer.VerticalScrollBarVisibility="Auto"
-                         ItemsSource="{Binding ElementName=ChatsListView, Path=SelectedItem.Messages}"
-                         SelectionMode="Single"
-                         ItemContainerStyle="{StaticResource MessageItemStyle}">
+         Grid.Row="1"
+         Margin="10,0,10,10"
+         Background="Transparent"
+         BorderThickness="0"
+         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+         ScrollViewer.VerticalScrollBarVisibility="Auto"
+         ItemsSource="{Binding ElementName=ChatsListView, Path=SelectedItem.Messages}"
+         SelectionMode="Single"
+         ItemContainerStyle="{StaticResource MessageItemStyle}">
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid HorizontalAlignment="{Binding IsSenderCurrentUser, Converter={StaticResource BoolToAlignmentConverter}}">
-                                <Border Background="#E1E1E1"
-                                        CornerRadius="8"
-                                        Padding="10"
-                                        Margin="5,2"
-                                        MaxWidth="400">
+                                <Border Background="{Binding IsSenderCurrentUser, Converter={StaticResource BoolToBackgroundConverter}}"
+                        CornerRadius="8"
+                        Padding="10"
+                        Margin="5,2"
+                        MaxWidth="400">
                                     <StackPanel>
                                         <TextBlock Text="{Binding SenderName}"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="#FF0060A9" />
+                                   FontWeight="SemiBold"
+                                   Foreground="{Binding IsSenderCurrentUser, Converter={StaticResource SenderNameForegroundConverter}}" />
                                         <TextBlock Text="{Binding Content}"
-                                                   TextWrapping="Wrap"
-                                                   Margin="0,3,0,3"/>
+                                   TextWrapping="Wrap"
+                                   Margin="0,3,0,3"/>
                                         <TextBlock Visibility="{Binding Attachment, Converter={StaticResource NullToVisibilityConverter}}"
-                                                   Text="{Binding Attachment.FileName}"
-                                                   Foreground="#444d2e"
-                                                   TextDecorations="Underline"
-                                                   Cursor="Hand"
-                                                   MouseDown="DownloadFileTextBlock_MouseDown"
-                                                   Margin="0,5,0,0"/>
+                                   Text="{Binding Attachment.FileName}"
+                                   Foreground="#444d2e"
+                                   TextDecorations="Underline"
+                                   Cursor="Hand"
+                                   MouseDown="DownloadFileTextBlock_MouseDown"
+                                   Margin="0,5,0,0"/>
                                         <TextBlock Text="{Binding SentDate, StringFormat='{}{0:g}'}"
-                                                   Foreground="Gray"
-                                                   FontSize="10"
-                                                   HorizontalAlignment="Right"/>
+                                   Foreground="Gray"
+                                   FontSize="10"
+                                   HorizontalAlignment="Right"/>
                                     </StackPanel>
                                 </Border>
                             </Grid>
