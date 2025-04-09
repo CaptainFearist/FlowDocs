@@ -8,9 +8,9 @@ namespace File_Manager.Core.Services
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is bool isCurrentUser && isCurrentUser)
+            if (value is bool isCurrentUser)
             {
-                return HorizontalAlignment.Right;
+                return isCurrentUser ? HorizontalAlignment.Right : HorizontalAlignment.Left;
             }
             return HorizontalAlignment.Left;
         }
@@ -20,6 +20,4 @@ namespace File_Manager.Core.Services
             throw new NotImplementedException();
         }
     }
-
-
 }
