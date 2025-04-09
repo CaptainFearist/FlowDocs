@@ -10,9 +10,12 @@ namespace File_Manager.Core.Services
         {
             if (value is bool isCurrentUser)
             {
-                return isCurrentUser ? new SolidColorBrush(Color.FromRgb(225, 225, 225)) : new SolidColorBrush(Color.FromRgb(204, 229, 255));
+                SolidColorBrush currentUserBackground = new SolidColorBrush(Color.FromRgb(188, 204, 188));
+                SolidColorBrush otherUserBackground = new SolidColorBrush(Color.FromRgb(218, 215, 205));
+
+                return isCurrentUser ? currentUserBackground : otherUserBackground;
             }
-            return new SolidColorBrush(Color.FromRgb(225, 225, 225));
+            return new SolidColorBrush(Color.FromRgb(218, 215, 205));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
