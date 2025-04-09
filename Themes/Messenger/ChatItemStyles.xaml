@@ -12,14 +12,14 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
                     <Border Background="{TemplateBinding Background}"
-            BorderBrush="{TemplateBinding BorderBrush}"
-            BorderThickness="{TemplateBinding BorderThickness}"
-            Padding="{TemplateBinding Padding}"
-            SnapsToDevicePixels="true"
-            HorizontalAlignment="{Binding IsSenderCurrentUser, Converter={StaticResource BoolToAlignmentConverter}}">
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="true"
+                            HorizontalAlignment="{Binding IsSenderCurrentUser, Converter={StaticResource BoolToAlignmentConverter}}">
                         <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
