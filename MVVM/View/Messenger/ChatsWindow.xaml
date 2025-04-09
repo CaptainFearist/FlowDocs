@@ -191,7 +191,7 @@
                                                    Margin="0,3,0,3"/>
                                         <TextBlock Visibility="{Binding Attachment, Converter={StaticResource NullToVisibilityConverter}}"
                                                    Text="{Binding Attachment.FileName}"
-                                                   Foreground="#444d2e"
+                                                   Foreground="#645F8C"
                                                    TextDecorations="Underline"
                                                    Cursor="Hand"
                                                    MouseDown="DownloadFileTextBlock_MouseDown"
