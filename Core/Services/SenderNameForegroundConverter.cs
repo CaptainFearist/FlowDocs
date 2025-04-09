@@ -6,18 +6,22 @@ namespace File_Manager.Core.Services
 {
     public class SenderNameForegroundConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, System.Type targetType, object parameter, CultureInfo culture)
         {
             if (value is bool isCurrentUser)
             {
-                return isCurrentUser ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Color.FromRgb(0, 96, 169));
+                SolidColorBrush currentUserColor = new SolidColorBrush(Color.FromRgb(40, 45, 64));
+
+                SolidColorBrush otherUserColor = new SolidColorBrush(Color.FromRgb(45, 49, 66));
+
+                return isCurrentUser ? currentUserColor : otherUserColor;
             }
-            return new SolidColorBrush(Color.FromRgb(0, 96, 169));
+            return new SolidColorBrush(Color.FromRgb(45, 49, 66));
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object value, System.Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            throw new System.NotImplementedException();
         }
     }
 }
