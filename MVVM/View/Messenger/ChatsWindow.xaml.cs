@@ -212,6 +212,9 @@ namespace File_Manager.MVVM.View.Messenger
                 {
                     _selectedChat.Messages.Add(message);
                 }
+
+                MessagesList.ItemsSource = null;
+                MessagesList.ItemsSource = _selectedChat.Messages;
             }
             catch (Exception ex)
             {
