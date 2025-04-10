@@ -177,6 +177,14 @@ namespace File_Manager.MVVM.View.Messenger
             }
         }
 
+        private void MessagesList_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (_selectedChat != null && _selectedChat.Messages.Count > 0)
+            {
+                MessagesList.ScrollIntoView(_selectedChat.Messages.Last());
+            }
+        }
+
         private async Task LoadMessagesForChat(int chatId)
         {
             if (isLoadingMessages) return;
@@ -215,6 +223,11 @@ namespace File_Manager.MVVM.View.Messenger
 
                 MessagesList.ItemsSource = null;
                 MessagesList.ItemsSource = _selectedChat.Messages;
+
+                if (_selectedChat.Messages.Count > 0)
+                {
+                    MessagesList.ScrollIntoView(_selectedChat.Messages.Last());
+                }
             }
             catch (Exception ex)
             {
