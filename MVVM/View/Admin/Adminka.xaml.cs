@@ -11,6 +11,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentFormat.OpenXml;
 using System.IO;
+using File_Manager.MVVM.View.Messenger;
 
 namespace File_Manager
 {
@@ -354,6 +355,21 @@ namespace File_Manager
                         EndDatePicker.SelectedDate = null;
                     }
                 }
+            }
+        }
+
+        private void ContactButton_Click(object sender, RoutedEventArgs e)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserId == _userId);
+
+            if (currentUser != null)
+            {
+                ChatsWindow chatsWindow = new ChatsWindow(currentUser);
+                chatsWindow.Show();
+            }
+            else
+            {
+                MessageBox.Show("Пользователь не найден.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
