@@ -108,6 +108,22 @@
                             Click="ViewAllUsersButton_Click"
                             Style="{StaticResource MenuButton}"
                             Foreground="#2D3142"/>
+
+                    <Button Content="Сгенерировать отчет"
+                            Margin="5"
+                            Width="175" Height="50"
+                            FontSize="16"
+                            Click="GenerateReport_Click"
+                            Style="{StaticResource MenuButton}"
+                            Foreground="#2D3142"/>
+
+                    <StackPanel x:Name="ReportDatePanel" Visibility="Collapsed" Orientation="Vertical" Margin="10" Grid.Row="0" Grid.Column="1" Width="160" Height="115">
+                        <Label Content="С:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <DatePicker x:Name="StartDatePicker" Width="125"/>
+                        <Label Content="По:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <DatePicker x:Name="EndDatePicker" Width="125"/>
+                    </StackPanel>
+
                 </StackPanel>
 
                 <UniformGrid x:Name="DepartmentsPanel" 
