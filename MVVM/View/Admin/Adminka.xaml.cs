@@ -2,10 +2,13 @@
 using File_Manager.MVVM.View.Technician;
 using File_Manager.MVVM.ViewModel;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace File_Manager
 {
@@ -14,6 +17,7 @@ namespace File_Manager
         private readonly IT_DepartmentsContext _context;
         private readonly int _userId;
         private WindowResizer _windowResizer;
+        private bool isDatePanelVisible = false;
 
         public Adminka(int userId, string firstName, string lastName)
         {
@@ -74,7 +78,7 @@ namespace File_Manager
                 {
                     Tag = department.DepartmentId,
                     Margin = new Thickness(5),
-                    Style = (Style)FindResource("DepartmentButton"),
+                    Style = (System.Windows.Style)FindResource("DepartmentButton"),
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     VerticalAlignment = VerticalAlignment.Stretch,
                     MaxWidth = 650,
@@ -182,6 +186,95 @@ namespace File_Manager
 
             var usersWindow = new UsersWindow();
             usersWindow.Show();
+        }
+
+        private void GenerateReport_Click(object sender, RoutedEventArgs e)
+        {
+            if (!isDatePanelVisible)
+            {
+                ReportDatePanel.Visibility = Visibility.Visible;
+                isDatePanelVisible = true;
+                return;
+            }
+
+            if (StartDatePicker.SelectedDate == null || EndDatePicker.SelectedDate == null)
+            {
+                MessageBox.Show("Выберите обе даты для отчета.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            DateTime startDate = StartDatePicker.SelectedDate.Value.Date;
+            DateTime endDate = EndDatePicker.SelectedDate.Value.Date.AddDays(1).AddTicks(-1);
+
+            // Файлы с данными о пользователе и отделе
+            var files = _context.Files
+                .Where(f => f.UploadDate >= startDate && f.UploadDate <= endDate && f.User != null)
+                .Select(f => new
+                {
+                    f.FileSize,
+                    f.User.FirstName,
+                    f.User.LastName,
+                    DepartmentName = f.User.Department != null ? f.User.Department.DepartmentName : "Не указан"
+                })
+                .ToList();
+
+            int totalFiles = files.Count;
+            long totalSize = files.Sum(f => f.FileSize ?? 0);
+
+            // Группировка по пользователям и отделам
+            var userGroups = files
+                .GroupBy(f => new { f.FirstName, f.LastName, f.DepartmentName })
+                .Select(g => new
+                {
+                    FullName = $"{g.Key.FirstName} {g.Key.LastName}",
+                    Department = g.Key.DepartmentName,
+                    FileCount = g.Count(),
+                })
+                .OrderByDescending(g => g.FileCount)
+                .ToList();
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"📅 Отчет за период: {startDate:dd.MM.yyyy} — {endDate:dd.MM.yyyy}");
+            sb.AppendLine($"Всего загружено файлов: {totalFiles}");
+            sb.AppendLine();
+            sb.AppendLine("📌 Статистика по пользователям:\n");
+
+            foreach (var user in userGroups)
+            {
+                sb.AppendLine($"👤 {user.FullName} | 📁 {user.FileCount} файлов | 🏢 Отдел: {user.Department}");
+            }
+
+            var saveDialog = new Microsoft.Win32.SaveFileDialog
+            {
+                FileName = $"Отчет_{startDate:yyyyMMdd}_{endDate:yyyyMMdd}",
+                DefaultExt = ".docx",
+                Filter = "Word документы (.docx)|*.docx|Все файлы (*.*)|*.*"
+            };
+
+            if (saveDialog.ShowDialog() == true)
+            {
+                using (WordprocessingDocument wordDocument = WordprocessingDocument.Create(saveDialog.FileName, DocumentFormat.OpenXml.WordprocessingDocumentType.Document))
+                {
+                    MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
+                    mainPart.Document = new Document(new Body());
+
+                    Body body = mainPart.Document.Body;
+                    body.Append(new Paragraph(new Run(new Text($"📅 Отчет за период: {startDate:dd.MM.yyyy} — {endDate:dd.MM.yyyy}"))));
+                    body.Append(new Paragraph(new Run(new Text($"Всего загружено файлов: {totalFiles}"))));
+                    body.Append(new Paragraph(new Run(new Text(""))));
+                    body.Append(new Paragraph(new Run(new Text("📌 Статистика по пользователям:"))));
+
+                    foreach (var user in userGroups)
+                    {
+                        body.Append(new Paragraph(new Run(new Text($"👤 {user.FullName} | 📁 {user.FileCount} файлов | 🏢 Отдел: {user.Department}"))));
+                    }
+                }
+
+                MessageBox.Show("Отчет успешно сохранен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            ReportDatePanel.Visibility = Visibility.Collapsed;
+            isDatePanelVisible = false;
         }
 
         private void ProfileButton_Click(object sender, RoutedEventArgs e)
