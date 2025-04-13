@@ -50,109 +50,111 @@
             </StackPanel>
         </Grid>
 
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+        <Border BorderBrush="#b8b5ad" BorderThickness="3,0,3,3">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <Grid Margin="10" Grid.Row="0">
-                <Grid Margin="0,0,0,10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="260" />
-                    </Grid.ColumnDefinitions>
+                <Grid Margin="10" Grid.Row="0">
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="260" />
+                        </Grid.ColumnDefinitions>
 
-                    <TextBlock x:Name="DepartmentNameTextBlock"
-                               FontSize="20" FontWeight="Bold"
-                               VerticalAlignment="Center"
-                               Margin="0,0,10,0"
-                               Grid.Column="0"
-                               Text="{Binding DepartmentName}"/>
+                        <TextBlock x:Name="DepartmentNameTextBlock"
+                                   FontSize="20" FontWeight="Bold"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,10,0"
+                                   Grid.Column="0"
+                                   Text="{Binding DepartmentName}"/>
 
-                    <TextBox x:Name="SearchBox"
-                             Width="230"
-                             Height="25"
-                             HorizontalAlignment="Left"
-                             Margin="30,0,0,0"
-                             VerticalAlignment="Center"
-                             Grid.Column="1"
-                             Style="{StaticResource ModernSearch}"
-                             TextChanged="SearchBox_TextChanged"
-                             GotFocus="Search_GotFocus"
-                             LostFocus="Search_LostFocus"/>
-                    <TextBlock x:Name="SearchHint"
-                               Text="Поиск..."
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Left"
-                               Foreground="Gray"
-                               IsHitTestVisible="False"
-                               Visibility="Visible" Grid.Column="1" Margin="39,0,0,0" />
+                        <TextBox x:Name="SearchBox"
+                                 Width="230"
+                                 Height="25"
+                                 HorizontalAlignment="Left"
+                                 Margin="30,0,0,0"
+                                 VerticalAlignment="Center"
+                                 Grid.Column="1"
+                                 Style="{StaticResource ModernSearch}"
+                                 TextChanged="SearchBox_TextChanged"
+                                 GotFocus="Search_GotFocus"
+                                 LostFocus="Search_LostFocus"/>
+                        <TextBlock x:Name="SearchHint"
+                                   Text="Поиск..."
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Left"
+                                   Foreground="Gray"
+                                   IsHitTestVisible="False"
+                                   Visibility="Visible" Grid.Column="1" Margin="39,0,0,0" />
+                    </Grid>
                 </Grid>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                            Margin="0,0,0,10" Grid.Row="1">
+
+                    <Button x:Name="AddFileButton"
+                            Content="Добавить файл"
+                            Width="120" Height="30"
+                            Margin="0,0,10,0"
+                            Click="AddFileButton_Click"
+                            Style="{StaticResource AddDelete}"/>
+
+                    <Button x:Name="DeleteFileButton"
+                            Content="Удалить файл"
+                            Width="108" Height="30"
+                            Margin="0,0,10,0"
+                            Click="DeleteFileButton_Click"
+                            Style="{StaticResource AddDelete}"/>
+
+                    <Button Content="Скачать файл"
+                            Width="108" Height="30"
+                            Margin="0,0,10,0"
+                            Click="DownloadFileButton_Click"
+                            Style="{StaticResource AddDelete}"/>
+
+                </StackPanel>
+
+                <ListView x:Name="FilesListView"
+                          ItemsSource="{Binding Files}"
+                          MouseDoubleClick="FilesListView_MouseDoubleClick"
+                          Background="{StaticResource ListView.Background}"
+                          AllowDrop="True"
+                          DragEnter="FilesListView_DragEnter"
+                          Drop="FilesListView_Drop"
+                          AlternationCount="2"
+                          VerticalAlignment="Stretch"
+                          HorizontalAlignment="Stretch"
+                          Grid.Row="2"
+                          Margin="15">
+
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Название файла"
+                                            DisplayMemberBinding="{Binding FileName}"
+                                            Width="384">
+                                <GridViewColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" FontSize="14"/>
+                                    </DataTemplate>
+                                </GridViewColumn.HeaderTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Когда загружен"
+                                            DisplayMemberBinding="{Binding UploadDate}"
+                                            Width="380">
+                                <GridViewColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" FontSize="14"/>
+                                    </DataTemplate>
+                                </GridViewColumn.HeaderTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
             </Grid>
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
-                        Margin="0,0,0,10" Grid.Row="1">
-
-                <Button x:Name="AddFileButton"
-                        Content="Добавить файл"
-                        Width="120" Height="30"
-                        Margin="0,0,10,0"
-                        Click="AddFileButton_Click"
-                        Style="{StaticResource AddDelete}"/>
-
-                <Button x:Name="DeleteFileButton"
-                        Content="Удалить файл"
-                        Width="108" Height="30"
-                        Margin="0,0,10,0"
-                        Click="DeleteFileButton_Click"
-                        Style="{StaticResource AddDelete}"/>
-
-                <Button Content="Скачать файл"
-                        Width="108" Height="30"
-                        Margin="0,0,10,0"
-                        Click="DownloadFileButton_Click"
-                        Style="{StaticResource AddDelete}"/>
-
-            </StackPanel>
-
-            <ListView x:Name="FilesListView"
-                      ItemsSource="{Binding Files}"
-                      MouseDoubleClick="FilesListView_MouseDoubleClick"
-                      Background="{StaticResource ListView.Background}"
-                      AllowDrop="True"
-                      DragEnter="FilesListView_DragEnter"
-                      Drop="FilesListView_Drop"
-                      AlternationCount="2"
-                      VerticalAlignment="Stretch"
-                      HorizontalAlignment="Stretch"
-                      Grid.Row="2"
-                      Margin="15">
-
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Название файла"
-                                        DisplayMemberBinding="{Binding FileName}"
-                                        Width="384">
-                            <GridViewColumn.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}" FontSize="14"/>
-                                </DataTemplate>
-                            </GridViewColumn.HeaderTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Когда загружен"
-                                        DisplayMemberBinding="{Binding UploadDate}"
-                                        Width="380">
-                            <GridViewColumn.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}" FontSize="14"/>
-                                </DataTemplate>
-                            </GridViewColumn.HeaderTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-        </Grid>
+        </Border>
     </DockPanel>
 </Window>
