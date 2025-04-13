@@ -91,6 +91,16 @@
                         Height="50"/>
 
                 <StackPanel Grid.Column="0" Grid.Row="1" Margin="5,10,0,10">
+                    <Button x:Name="ContactButton"
+                            Content="Чаты"
+                            FontFamily="Tahoma"
+                            Margin="5"
+                            Width="165" Height="50"
+                            FontSize="16"
+                            Click="ContactButton_Click"
+                            Style="{StaticResource MenuButton}"
+                            Foreground="#2D3142"/>
+
                     <Button x:Name="AddUserButton" 
                             Content="Добавить сотрудника" 
                             Margin="5"
