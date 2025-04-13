@@ -43,46 +43,48 @@
             </StackPanel>
         </Grid>
 
-        <Grid>
-            <StackPanel Margin="10">
-                <TextBlock Text="Имя:" 
-                           FontFamily="Tahoma"/>
-                <TextBox x:Name="FirstNameTextBox"
-                         Margin="0,0,0,10"
-                         Style="{StaticResource TextPass}"/>
-                <TextBlock Text="Фамилия:" 
-                           FontFamily="Tahoma"/>
-                <TextBox x:Name="LastNameTextBox"
-                         Margin="0,0,0,10"
-                         Style="{StaticResource TextPass}"/>
-                <TextBlock Text="Email:" 
-                           FontFamily="Tahoma"/>
-                <TextBox x:Name="EmailTextBox" 
-                         Margin="0,0,0,10"
-                         Style="{StaticResource TextPass}"/>
-                <TextBlock Text="Имя пользователя:" 
-                           FontFamily="Tahoma"/>
-                <TextBox x:Name="UsernameTextBox" 
-                         Margin="0,0,0,10"
-                         Style="{StaticResource TextPass}"/>
-                <TextBlock Text="Пароль:" 
-                           FontFamily="Tahoma"/>
-                <PasswordBox x:Name="PasswordBox" 
+        <Border BorderBrush="#b8b5ad" BorderThickness="3,0,3,3">
+            <Grid>
+                <StackPanel Margin="10">
+                    <TextBlock Text="Имя:" 
+                               FontFamily="Tahoma"/>
+                    <TextBox x:Name="FirstNameTextBox"
                              Margin="0,0,0,10"
-                             Style="{StaticResource TextPassp}"/>
-                <TextBlock Text="ID Отдела:" 
-                           FontFamily="Tahoma"/>
-                <TextBox x:Name="DepartmentIdTextBox" 
-                         Margin="0,0,0,10"
-                         Style="{StaticResource TextPass}"/>
-                <Button Content="Добавить" 
-                        FontFamily="Tahoma"
-                        Width="110" 
-                        Height="50"
-                        Foreground="Black"
-                        Click="AddButton_Click" 
-                        Style="{StaticResource MenuButton}"/>
-            </StackPanel>
-        </Grid>
+                             Style="{StaticResource TextPass}"/>
+                    <TextBlock Text="Фамилия:" 
+                               FontFamily="Tahoma"/>
+                    <TextBox x:Name="LastNameTextBox"
+                             Margin="0,0,0,10"
+                             Style="{StaticResource TextPass}"/>
+                    <TextBlock Text="Email:" 
+                               FontFamily="Tahoma"/>
+                    <TextBox x:Name="EmailTextBox" 
+                             Margin="0,0,0,10"
+                             Style="{StaticResource TextPass}"/>
+                    <TextBlock Text="Имя пользователя:" 
+                               FontFamily="Tahoma"/>
+                    <TextBox x:Name="UsernameTextBox" 
+                             Margin="0,0,0,10"
+                             Style="{StaticResource TextPass}"/>
+                    <TextBlock Text="Пароль:" 
+                               FontFamily="Tahoma"/>
+                    <PasswordBox x:Name="PasswordBox" 
+                                 Margin="0,0,0,10"
+                                 Style="{StaticResource TextPassp}"/>
+                    <TextBlock Text="ID Отдела:" 
+                               FontFamily="Tahoma"/>
+                    <TextBox x:Name="DepartmentIdTextBox" 
+                             Margin="0,0,0,10"
+                             Style="{StaticResource TextPass}"/>
+                    <Button Content="Добавить" 
+                            FontFamily="Tahoma"
+                            Width="110" 
+                            Height="50"
+                            Foreground="Black"
+                            Click="AddButton_Click" 
+                            Style="{StaticResource MenuButton}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
     </DockPanel>
 </Window>
