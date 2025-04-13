@@ -109,7 +109,8 @@
                             Style="{StaticResource MenuButton}"
                             Foreground="#2D3142"/>
 
-                    <Button Content="Сгенерировать отчет"
+                    <Button x:Name="ReportButton"
+                            Content="Сгенерировать отчет"
                             Margin="5"
                             Width="175" Height="50"
                             FontSize="16"
