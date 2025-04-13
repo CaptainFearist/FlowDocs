@@ -1,14 +1,16 @@
 ﻿using File_Manager.Entities;
 using File_Manager.MVVM.View.Technician;
 using File_Manager.MVVM.ViewModel;
+using File_Manager.MVVM.Model;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentFormat.OpenXml;
+using System.IO;
 
 namespace File_Manager
 {
@@ -188,93 +190,171 @@ namespace File_Manager
             usersWindow.Show();
         }
 
+        private Run CreateTextRun(string text, bool isBold = false)
+        {
+            Run run = new Run(new Text(text) { Space = SpaceProcessingModeValues.Preserve }); // Preserve нужен для пробелов
+            if (isBold)
+            {
+                RunProperties runProperties = new RunProperties(new Bold());
+                run.RunProperties = runProperties;
+            }
+            return run;
+        }
+
+        private Paragraph CreateParagraphWithText(string text, bool isBold = false)
+        {
+            return new Paragraph(CreateTextRun(text, isBold));
+        }
+
+        private void AddTableCell(TableRow row, string text, bool isBold, JustificationValues justification)
+        {
+            TableCell cell = new TableCell();
+            Paragraph paragraph = CreateParagraphWithText(text, isBold);
+
+            // Выравнивание
+            ParagraphProperties paragraphProperties = new ParagraphProperties(new Justification() { Val = justification });
+            paragraph.ParagraphProperties = paragraphProperties;
+
+            cell.Append(paragraph);
+            row.Append(cell);
+        }
+
+        private void AddTableCell(TableRow row, string text, bool isBold = false)
+        {
+            AddTableCell(row, text, isBold, JustificationValues.Center);
+        }
+
         private void GenerateReport_Click(object sender, RoutedEventArgs e)
         {
-            if (!isDatePanelVisible)
+            if (sender is Button clickedButton && clickedButton.Name == "ReportButton")
             {
-                ReportDatePanel.Visibility = Visibility.Visible;
-                isDatePanelVisible = true;
-                return;
-            }
-
-            if (StartDatePicker.SelectedDate == null || EndDatePicker.SelectedDate == null)
-            {
-                MessageBox.Show("Выберите обе даты для отчета.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            DateTime startDate = StartDatePicker.SelectedDate.Value.Date;
-            DateTime endDate = EndDatePicker.SelectedDate.Value.Date.AddDays(1).AddTicks(-1);
-
-            // Файлы с данными о пользователе и отделе
-            var files = _context.Files
-                .Where(f => f.UploadDate >= startDate && f.UploadDate <= endDate && f.User != null)
-                .Select(f => new
+                if (!isDatePanelVisible)
                 {
-                    f.FileSize,
-                    f.User.FirstName,
-                    f.User.LastName,
-                    DepartmentName = f.User.Department != null ? f.User.Department.DepartmentName : "Не указан"
-                })
-                .ToList();
-
-            int totalFiles = files.Count;
-            long totalSize = files.Sum(f => f.FileSize ?? 0);
-
-            // Группировка по пользователям и отделам
-            var userGroups = files
-                .GroupBy(f => new { f.FirstName, f.LastName, f.DepartmentName })
-                .Select(g => new
-                {
-                    FullName = $"{g.Key.FirstName} {g.Key.LastName}",
-                    Department = g.Key.DepartmentName,
-                    FileCount = g.Count(),
-                })
-                .OrderByDescending(g => g.FileCount)
-                .ToList();
-
-            var sb = new StringBuilder();
-            sb.AppendLine($"📅 Отчет за период: {startDate:dd.MM.yyyy} — {endDate:dd.MM.yyyy}");
-            sb.AppendLine($"Всего загружено файлов: {totalFiles}");
-            sb.AppendLine();
-            sb.AppendLine("📌 Статистика по пользователям:\n");
-
-            foreach (var user in userGroups)
-            {
-                sb.AppendLine($"👤 {user.FullName} | 📁 {user.FileCount} файлов | 🏢 Отдел: {user.Department}");
-            }
-
-            var saveDialog = new Microsoft.Win32.SaveFileDialog
-            {
-                FileName = $"Отчет_{startDate:yyyyMMdd}_{endDate:yyyyMMdd}",
-                DefaultExt = ".docx",
-                Filter = "Word документы (.docx)|*.docx|Все файлы (*.*)|*.*"
-            };
-
-            if (saveDialog.ShowDialog() == true)
-            {
-                using (WordprocessingDocument wordDocument = WordprocessingDocument.Create(saveDialog.FileName, DocumentFormat.OpenXml.WordprocessingDocumentType.Document))
-                {
-                    MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
-                    mainPart.Document = new Document(new Body());
-
-                    Body body = mainPart.Document.Body;
-                    body.Append(new Paragraph(new Run(new Text($"📅 Отчет за период: {startDate:dd.MM.yyyy} — {endDate:dd.MM.yyyy}"))));
-                    body.Append(new Paragraph(new Run(new Text($"Всего загружено файлов: {totalFiles}"))));
-                    body.Append(new Paragraph(new Run(new Text(""))));
-                    body.Append(new Paragraph(new Run(new Text("📌 Статистика по пользователям:"))));
-
-                    foreach (var user in userGroups)
-                    {
-                        body.Append(new Paragraph(new Run(new Text($"👤 {user.FullName} | 📁 {user.FileCount} файлов | 🏢 Отдел: {user.Department}"))));
-                    }
+                    ReportDatePanel.Visibility = Visibility.Visible;
+                    isDatePanelVisible = true;
+                    return;
                 }
 
-                MessageBox.Show("Отчет успешно сохранен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+                if (StartDatePicker.SelectedDate == null || EndDatePicker.SelectedDate == null)
+                {
+                    MessageBox.Show("Выберите обе даты для отчета.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
 
-            ReportDatePanel.Visibility = Visibility.Collapsed;
-            isDatePanelVisible = false;
+                DateTime startDate = StartDatePicker.SelectedDate.Value.Date;
+                DateTime endDateExclusive = EndDatePicker.SelectedDate.Value.Date.AddDays(1);
+                DateTime endDateInclusive = endDateExclusive.AddTicks(-1);
+
+                try
+                {
+                    var files = _context.Files
+                        .Where(f => f.UploadDate >= startDate && f.UploadDate < endDateExclusive && f.User != null)
+                        .Select(f => new
+                        {
+                            f.FileSize,
+                            f.User.FirstName,
+                            f.User.LastName,
+                            DepartmentName = f.User.Department != null ? f.User.Department.DepartmentName : "Не указан"
+                        })
+                        .ToList();
+
+                    int totalFiles = files.Count;
+                    long totalSize = files.Sum(f => f.FileSize ?? 0);
+
+                    var userGroups = files
+                        .GroupBy(f => new { f.FirstName, f.LastName, f.DepartmentName })
+                        .Select(g => new UserReportData
+                        {
+                            FullName = $"{g.Key.FirstName} {g.Key.LastName}",
+                            Department = g.Key.DepartmentName,
+                            FileCount = g.Count(),
+                        })
+                        .OrderByDescending(g => g.FileCount)
+                        .ToList();
+
+                    var saveDialog = new Microsoft.Win32.SaveFileDialog
+                    {
+                        FileName = $"Отчет_{startDate:yyyyMMdd}-{endDateInclusive:yyyyMMdd}_{DateTime.Now:yyyyMMddHHmmss}",
+                        DefaultExt = ".docx",
+                        Filter = "Word документы (.docx)|*.docx|Все файлы (*.*)|*.*",
+                        Title = "Сохранить отчет"
+                    };
+
+                    if (saveDialog.ShowDialog() == true)
+                    {
+                        using (WordprocessingDocument wordDocument = WordprocessingDocument.Create(saveDialog.FileName, WordprocessingDocumentType.Document))
+                        {
+                            MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
+                            mainPart.Document = new Document();
+                            Body body = mainPart.Document.AppendChild(new Body());
+                            
+                            // Заголовок
+                            body.Append(CreateParagraphWithText("Отчет по загруженным файлам", isBold: true));
+                            body.Append(CreateParagraphWithText(""));
+                            
+                            // Сводная информация
+                            body.Append(CreateParagraphWithText($"Период отчета: {startDate:dd.MM.yyyy} — {endDateInclusive:dd.MM.yyyy}"));
+                            body.Append(CreateParagraphWithText($"Всего загружено файлов: {totalFiles}"));
+                            body.Append(CreateParagraphWithText(""));
+                            
+                            // Таблица со статистикой
+                            body.Append(CreateParagraphWithText("Статистика по пользователям:", isBold: true));
+
+                            Table table = new Table();
+
+                            TableProperties tblProps = new TableProperties(
+                                new TableBorders(
+                                    new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 4 },
+                                    new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 4 },
+                                    new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 4 },
+                                    new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 4 },
+                                    new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 4 },
+                                    new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 4 }
+                                ),
+                                new TableWidth { Width = "5000", Type = TableWidthUnitValues.Pct }
+                            );
+                            table.AppendChild(tblProps);
+
+                            TableRow headerRow = new TableRow();
+                            AddTableCell(headerRow, "Пользователь", isBold: true);
+                            AddTableCell(headerRow, "Отдел", isBold: true);
+                            AddTableCell(headerRow, "Количество файлов", isBold: true, justification: JustificationValues.Center);
+                            table.Append(headerRow);
+
+                            foreach (var user in userGroups)
+                            {
+                                TableRow dataRow = new TableRow();
+                                AddTableCell(dataRow, user.FullName);
+                                AddTableCell(dataRow, user.Department);
+                                AddTableCell(dataRow, user.FileCount.ToString(), isBold: false, justification: JustificationValues.Center);
+                                table.Append(dataRow);
+                            }
+
+                            body.Append(table);
+                        }
+
+                        MessageBox.Show("Отчет успешно сохранен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+                catch (IOException ex)
+                {
+                    MessageBox.Show($"Ошибка при сохранении файла: {ex.Message}", "Ошибка сохранения", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Произошла ошибка при генерации отчета: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    if (isDatePanelVisible)
+                    {
+                        ReportDatePanel.Visibility = Visibility.Collapsed;
+                        isDatePanelVisible = false;
+                        StartDatePicker.SelectedDate = null;
+                        EndDatePicker.SelectedDate = null;
+                    }
+                }
+            }
         }
 
         private void ProfileButton_Click(object sender, RoutedEventArgs e)
