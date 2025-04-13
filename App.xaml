@@ -23,6 +23,7 @@
                 <ResourceDictionary Source="Themes/MinimizeButtonStyle.xaml"/>
                 <ResourceDictionary Source="Themes/MaximizeRestoreButtonStyle.xaml"/>
                 <ResourceDictionary Source="Themes/ScrollStyle.xaml"/>
+                <ResourceDictionary Source="Themes/RoundedControls.xaml"/>
                 <ResourceDictionary Source="Themes/Messenger/MaterialDesignOutlinedTextBox.xaml"/>
                 <ResourceDictionary Source="Themes/Messenger/SendMessageButtonStyle.xaml"/>
                 <ResourceDictionary Source="Themes/Messenger/ListViewStyles.xaml"/>
