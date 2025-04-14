@@ -173,7 +173,8 @@
                          ItemsSource="{Binding ElementName=ChatsListView, Path=SelectedItem.Messages}"
                          SelectionMode="Single"
                          ItemContainerStyle="{StaticResource MessageItemStyle}"
-                         Loaded="MessagesList_Loaded">
+                         Loaded="MessagesList_Loaded"
+                         SelectionChanged="ChatsListView_SelectionChanged">
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
