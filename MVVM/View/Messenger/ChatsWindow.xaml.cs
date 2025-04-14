@@ -6,8 +6,8 @@ using File_Manager.Entities;
 using File_Manager.MVVM.ViewModel;
 using File_Manager.MVVM.Model;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace File_Manager.MVVM.View.Messenger
 {
@@ -15,19 +15,20 @@ namespace File_Manager.MVVM.View.Messenger
     {
         private readonly IT_DepartmentsContext _context;
         private User _currentUser;
+        private ChatModel _selectedChat;
+        private int _pendingOtherUserId = 0;
+        private bool isLoadingMessages = false;
         private List<EmployeeViewModel> _allUsers = new List<EmployeeViewModel>();
         private ObservableCollection<ChatModel> _chats = new ObservableCollection<ChatModel>();
         private ObservableCollection<FileViewModel> _currentAttachments = new ObservableCollection<FileViewModel>();
-        private ChatModel _selectedChat;
-        private bool isLoadingMessages = false;
 
         public ChatsWindow(User currentUser)
         {
             InitializeComponent();
             var options = new DbContextOptionsBuilder<IT_DepartmentsContext>()
                 .UseSqlServer("Data Source=HoneyPot\\SQLEXPRESS;" +
-                              "Initial Catalog=IT_Departments;Integrated Security=True;MultipleActiveResultSets=True;" +
-                              "TrustServerCertificate=True")
+                                    "Initial Catalog=IT_Departments;Integrated Security=True;MultipleActiveResultSets=True;" +
+                                    "TrustServerCertificate=True")
                 .Options;
 
             _currentUser = currentUser;
@@ -76,7 +77,6 @@ namespace File_Manager.MVVM.View.Messenger
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при загрузке пользователей: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                Debug.WriteLine($"LoadUsersAsync ERROR: {ex.ToString()}");
                 _allUsers = new List<EmployeeViewModel>();
             }
         }
@@ -87,36 +87,32 @@ namespace File_Manager.MVVM.View.Messenger
             {
                 int otherUserId = selectedUserEntry.ChatId;
 
-                try
+                int existingChatId = await CheckExistingChatAsync(otherUserId);
+
+                if (existingChatId > 0)
                 {
-                    int actualChatId = await GetOrCreateChatAsync(otherUserId);
+                    _selectedChat = selectedUserEntry;
+                    _selectedChat.ChatId = existingChatId;
+                    MessagesList.ItemsSource = _selectedChat.Messages;
+                    ChatTitle.Text = $"{_selectedChat.FirstName} {_selectedChat.LastName}";
 
-                    if (actualChatId > 0)
+                    if (_selectedChat.Messages.Count == 0)
                     {
-                        _selectedChat = selectedUserEntry;
-                        _selectedChat.ChatId = actualChatId;
-
-                        _selectedChat.Messages.Clear();
-                        MessagesList.ItemsSource = _selectedChat.Messages;
-
-                        ChatTitle.Text = $"{_selectedChat.FirstName} {_selectedChat.LastName}";
-
-                        await LoadMessagesForChat(actualChatId);
+                        await LoadMessagesForChat(existingChatId);
                     }
-                    else
-                    {
-                        _selectedChat = null;
-                        MessagesList.ItemsSource = null;
-                        ChatTitle.Text = "Выберите чат";
-                    }
+
+                    ScrollToLastMessage();
+                    _pendingOtherUserId = 0;
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show($"Ошибка при выборе чата: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Debug.WriteLine($"ChatsListView_SelectionChanged ОШИБКА: {ex.ToString()}");
-                    _selectedChat = null;
-                    MessagesList.ItemsSource = null;
-                    ChatTitle.Text = "Выберите чат";
+                    _selectedChat = selectedUserEntry;
+                    _selectedChat.ChatId = 0;
+                    MessagesList.ItemsSource = _selectedChat.Messages;
+                    ChatTitle.Text = $"{_selectedChat.FirstName} {_selectedChat.LastName}";
+
+                    _pendingOtherUserId = otherUserId;
+                    ScrollToLastMessage();
                 }
             }
             else
@@ -124,7 +120,21 @@ namespace File_Manager.MVVM.View.Messenger
                 _selectedChat = null;
                 MessagesList.ItemsSource = null;
                 ChatTitle.Text = "Выберите чат";
+                _pendingOtherUserId = 0;
             }
+        }
+
+        private async Task<int> CheckExistingChatAsync(int otherUserId)
+        {
+            var existingChat = await _context.Chats
+                .Include(c => c.ChatParticipants)
+                .Where(c => c.ChatParticipants.Any(p => p.UserId == _currentUser.UserId) &&
+                            c.ChatParticipants.Any(p => p.UserId == otherUserId) &&
+                            c.ChatParticipants.Count == 2)
+                .Select(c => c.ChatId)
+                .FirstOrDefaultAsync();
+
+            return existingChat;
         }
 
         private async Task<int> GetOrCreateChatAsync(int otherUserId)
@@ -138,12 +148,10 @@ namespace File_Manager.MVVM.View.Messenger
 
             if (existingChat != null)
             {
-                Debug.WriteLine($"Найден существующий чат. ChatID: {existingChat.ChatId}");
                 return existingChat.ChatId;
             }
             else
             {
-                Debug.WriteLine($"Существующий чат не найден. Создание нового чата между пользователем {_currentUser.UserId} и пользователем {otherUserId}.");
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 try
                 {
@@ -156,13 +164,11 @@ namespace File_Manager.MVVM.View.Messenger
                     await _context.SaveChangesAsync();
 
                     int newChatId = newChat.ChatId;
-                    Debug.WriteLine($"Создана новая сущность Chat. ChatID: {newChatId}");
 
                     var participant1 = new ChatParticipant { ChatId = newChatId, UserId = _currentUser.UserId };
                     var participant2 = new ChatParticipant { ChatId = newChatId, UserId = otherUserId };
                     _context.ChatParticipants.AddRange(participant1, participant2);
                     await _context.SaveChangesAsync();
-                    Debug.WriteLine($"Добавление участников в ChatID: {newChatId}");
 
                     await transaction.CommitAsync();
                     return newChatId;
@@ -170,18 +176,32 @@ namespace File_Manager.MVVM.View.Messenger
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    Debug.WriteLine($"ОШИБКА при создании чата: {ex.ToString()}");
                     MessageBox.Show($"Не удалось создать запись чата в базе данных: {ex.Message}", "Ошибка БД", MessageBoxButton.OK, MessageBoxImage.Error);
                     return 0;
                 }
             }
         }
 
-        private void MessagesList_Loaded(object sender, RoutedEventArgs e)
+        private void ScrollToLastMessage()
         {
-            if (_selectedChat != null && _selectedChat.Messages.Count > 0)
+            if (_selectedChat?.Messages.Count > 0)
             {
                 MessagesList.ScrollIntoView(_selectedChat.Messages.Last());
+            }
+        }
+
+        private async void MessagesList_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (_selectedChat != null)
+            {
+                if (_selectedChat.Messages.Count == 0 && _selectedChat.ChatId > 0)
+                {
+                    await LoadMessagesForChat(_selectedChat.ChatId);
+                }
+                if (_selectedChat.Messages.Count > 0)
+                {
+                    MessagesList.ScrollIntoView(_selectedChat.Messages.Last());
+                }
             }
         }
 
@@ -221,17 +241,14 @@ namespace File_Manager.MVVM.View.Messenger
                     _selectedChat.Messages.Add(message);
                 }
 
-                MessagesList.ItemsSource = null;
-                MessagesList.ItemsSource = _selectedChat.Messages;
-
                 if (_selectedChat.Messages.Count > 0)
                 {
-                    MessagesList.ScrollIntoView(_selectedChat.Messages.Last());
+                    ScrollToLastMessage();
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Ошибка при загрузке сообщений: {ex.Message}");
+                MessageBox.Show($"Ошибка при загрузке сообщений: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -245,9 +262,30 @@ namespace File_Manager.MVVM.View.Messenger
 
             if (!string.IsNullOrEmpty(message) && _selectedChat != null)
             {
+                if (_selectedChat.ChatId == 0 && _pendingOtherUserId > 0)
+                {
+                    int actualChatId = await GetOrCreateChatAsync(_pendingOtherUserId);
+                    if (actualChatId > 0)
+                    {
+                        _selectedChat.ChatId = actualChatId;
+                        MessagesList.ItemsSource = _selectedChat.Messages;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Не удалось создать чат для отправки сообщения.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    _pendingOtherUserId = 0;
+                }
+                else if (_selectedChat.ChatId == 0)
+                {
+                    MessageBox.Show("Пожалуйста, выберите чат перед отправкой сообщения.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 var currentUser = _context.Users.FirstOrDefault(u => u.UserId == _currentUser.UserId);
 
-                if (currentUser != null)
+                if (currentUser != null && _selectedChat.ChatId > 0)
                 {
                     var newMessage = new Message
                     {
@@ -268,10 +306,15 @@ namespace File_Manager.MVVM.View.Messenger
                         if (!fileTypeId.HasValue)
                         {
                             MessageBox.Show($"Не удалось определить тип файла для '{attachmentViewModel.FileName}'.");
-                            continue; // Пропустить этот файл
+                            continue;
                         }
 
-                        var newFile = await _context.Files.FirstOrDefaultAsync(f => f.FilePath == attachmentViewModel.FilePath && f.FileName == attachmentViewModel.FileName && f.UserId == _currentUser.UserId && f.FileTypeId == fileTypeId.Value);
+                        int fileTypeIdValue = fileTypeId.Value;
+                        var newFile = await _context.Files.FirstOrDefaultAsync(f =>
+                            f.FilePath == attachmentViewModel.FilePath &&
+                            f.FileName == attachmentViewModel.FileName &&
+                            f.UserId == _currentUser.UserId &&
+                            f.FileTypeId == fileTypeIdValue);
 
                         if (newFile == null)
                         {
@@ -281,7 +324,7 @@ namespace File_Manager.MVVM.View.Messenger
                                 FilePath = attachmentViewModel.FilePath,
                                 UploadDate = DateTime.Now,
                                 UserId = _currentUser.UserId,
-                                FileTypeId = fileTypeId.Value
+                                FileTypeId = fileTypeIdValue
                             };
                             _context.Files.Add(newFile);
                             await _context.SaveChangesAsync();
@@ -298,13 +341,13 @@ namespace File_Manager.MVVM.View.Messenger
 
                     LoadMessagesForChat(_selectedChat.ChatId);
                     MessageInput.Clear();
+                    _currentAttachments.Clear();
                 }
                 else
                 {
-                    MessageBox.Show("Не удалось найти пользователя для отправки сообщения.");
+                    MessageBox.Show("Не удалось найти пользователя для отправки сообщения или чат не выбран.");
                 }
             }
-            _currentAttachments.Clear();
         }
 
         private void AttachFile_Click(object sender, RoutedEventArgs e)
@@ -346,14 +389,7 @@ namespace File_Manager.MVVM.View.Messenger
 
         private void MessageInput_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(MessageInput.Text))
-            {
-                MessageHint.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                MessageHint.Visibility = Visibility.Collapsed;
-            }
+            MessageHint.Visibility = string.IsNullOrWhiteSpace(MessageInput.Text) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -361,15 +397,15 @@ namespace File_Manager.MVVM.View.Messenger
             string searchQuery = SearchChatsBox.Text?.ToLower() ?? "";
 
             var filteredUserModels = _allUsers
-                     .Where(user => (user.FirstName + " " + user.LastName).ToLower().Contains(searchQuery))
-                     .Select(u => new ChatModel
-                     {
-                         ChatId = u.UserId,
-                         FirstName = u.FirstName,
-                         LastName = u.LastName,
-                         ImagePath = u.ImagePath,
-                         Messages = new ObservableCollection<MessageModel>()
-                     }).ToList();
+                .Where(user => (user.FirstName + " " + user.LastName).ToLower().Contains(searchQuery))
+                .Select(u => new ChatModel
+                {
+                    ChatId = u.UserId,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    ImagePath = u.ImagePath,
+                    Messages = new ObservableCollection<MessageModel>()
+                }).ToList();
 
             _chats.Clear();
             foreach (var userModel in filteredUserModels)
@@ -401,10 +437,7 @@ namespace File_Manager.MVVM.View.Messenger
 
         private void Search_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(SearchChatsBox.Text))
-            {
-                SearchHint.Visibility = Visibility.Visible;
-            }
+            SearchHint.Visibility = string.IsNullOrWhiteSpace(SearchChatsBox.Text) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void MessageInput_KeyDown(object sender, KeyEventArgs e)
@@ -419,7 +452,7 @@ namespace File_Manager.MVVM.View.Messenger
         {
             if (e.ChangedButton == MouseButton.Left)
             {
-                this.DragMove();
+                DragMove();
             }
         }
 
@@ -435,7 +468,7 @@ namespace File_Manager.MVVM.View.Messenger
 
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
     }
 }
