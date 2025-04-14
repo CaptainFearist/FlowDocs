@@ -46,108 +46,110 @@
             </StackPanel>
         </Grid>
 
-        <Grid>
-            <StackPanel Margin="0,10,0,290">
-                <Label Content="Добро пожаловать в" 
-                       FontSize="18" 
-                       FontFamily="Tahoma"
-                       Foreground="#2D3142"
-                       HorizontalAlignment="Center" 
-                       Height="36"/>
-                <Label Content="FlowDocs" 
-                       FontSize="18" 
-                       Foreground="#2D3142"
-                       FontFamily="Cascadia Code"
-                       HorizontalAlignment="Center" 
-                       Height="36"/>
-            </StackPanel>
+        <Border BorderBrush="#b8b5ad" BorderThickness="3,0,3,3">
+            <Grid>
+                <StackPanel Margin="0,10,0,290">
+                    <Label Content="Добро пожаловать в" 
+                           FontSize="18" 
+                           FontFamily="Tahoma"
+                           Foreground="#2D3142"
+                           HorizontalAlignment="Center" 
+                           Height="36"/>
+                    <Label Content="FlowDocs" 
+                           FontSize="18" 
+                           Foreground="#2D3142"
+                           FontFamily="Cascadia Code"
+                           HorizontalAlignment="Center" 
+                           Height="36"/>
+                </StackPanel>
 
-            <StackPanel Margin="0,136,0,75" 
-                        HorizontalAlignment="Center">
+                <StackPanel Margin="0,136,0,75" 
+                            HorizontalAlignment="Center">
 
-                <Grid>
-                    <TextBox x:Name="LoginLogIn" 
-                             Width="290" Height="35" 
-                             VerticalContentAlignment="Center"
-                             Margin="0,0,0,5"
-                             Style="{StaticResource TextPass}"
-                             GotFocus="LoginLogIn_GotFocus"
-                             LostFocus="LoginLogIn_LostFocus"/>
-                    <TextBlock x:Name="LoginLogInHint" 
+                    <Grid>
+                        <TextBox x:Name="LoginLogIn" 
+                                 Width="290" Height="35" 
+                                 VerticalContentAlignment="Center"
+                                 Margin="0,0,0,5"
+                                 Style="{StaticResource TextPass}"
+                                 GotFocus="LoginLogIn_GotFocus"
+                                 LostFocus="LoginLogIn_LostFocus"/>
+                        <TextBlock x:Name="LoginLogInHint" 
+                                   Text="Введите логин" 
+                                   FontFamily="Tahoma"
+                                   VerticalAlignment="Top" 
+                                   HorizontalAlignment="Left" 
+                                   Margin="10,10,0,0"
+                                   Foreground="Gray" 
+                                   IsHitTestVisible="False" 
+                                   Visibility="Visible" />
+                    </Grid>
+
+                    <TextBlock x:Name="LoginError" 
                                Text="Введите логин" 
-                               FontFamily="Tahoma"
-                               VerticalAlignment="Top" 
-                               HorizontalAlignment="Left" 
-                               Margin="10,10,0,0"
-                               Foreground="Gray" 
-                               IsHitTestVisible="False" 
-                               Visibility="Visible" />
-                </Grid>
+                               FontSize="12" 
+                               Foreground="#ed556a" 
+                               Visibility="Collapsed"
+                               HorizontalAlignment="Left"
+                               Margin="10,0,0,5"
+                               MinHeight="16"/>
 
-                <TextBlock x:Name="LoginError" 
-                           Text="Введите логин" 
-                           FontSize="12" 
-                           Foreground="#ed556a" 
-                           Visibility="Collapsed"
-                           HorizontalAlignment="Left"
-                           Margin="10,0,0,5"
-                           MinHeight="16"/>
+                    <Grid>
+                        <PasswordBox x:Name="LoginPassInvis" 
+                                     Height="35" Width="290" 
+                                     VerticalContentAlignment="Center"
+                                     Style="{StaticResource TextPassp}"
+                                     GotFocus="LoginPassInvis_GotFocus"
+                                     LostFocus="LoginPassInvis_LostFocus"/>
 
-                <Grid>
-                    <PasswordBox x:Name="LoginPassInvis" 
+                        <TextBlock x:Name="LoginPassHint" 
+                                   Text="Введите пароль" 
+                                   FontFamily="Tahoma"
+                                   VerticalAlignment="Center" 
+                                   HorizontalAlignment="Left" 
+                                   Margin="10,0,0,0"
+                                   Foreground="Gray" 
+                                   IsHitTestVisible="False" 
+                                   Visibility="Visible" />
+
+                        <TextBox x:Name="LoginPassVis" 
                                  Height="35" Width="290" 
                                  VerticalContentAlignment="Center"
-                                 Style="{StaticResource TextPassp}"
-                                 GotFocus="LoginPassInvis_GotFocus"
-                                 LostFocus="LoginPassInvis_LostFocus"/>
+                                 Style="{StaticResource TextPass}" 
+                                 Visibility="Collapsed"
+                                 IsReadOnly="True" 
+                                 Text="Введите пароль" 
+                                 Foreground="Black" />
+                    </Grid>
 
-                    <TextBlock x:Name="LoginPassHint" 
+                    <TextBlock x:Name="PasswordError" 
                                Text="Введите пароль" 
-                               FontFamily="Tahoma"
-                               VerticalAlignment="Center" 
-                               HorizontalAlignment="Left" 
-                               Margin="10,0,0,0"
-                               Foreground="Gray" 
-                               IsHitTestVisible="False" 
-                               Visibility="Visible" />
+                               FontSize="12" 
+                               Foreground="#ed556a" 
+                               Visibility="Collapsed"
+                               HorizontalAlignment="Left"
+                               Margin="10,0,0,5"
+                               MinHeight="16"/>
 
-                    <TextBox x:Name="LoginPassVis" 
-                             Height="35" Width="290" 
-                             VerticalContentAlignment="Center"
-                             Style="{StaticResource TextPass}" 
-                             Visibility="Collapsed"
-                             IsReadOnly="True" 
-                             Text="Введите пароль" 
-                             Foreground="Black" />
-                </Grid>
+                    <Button x:Name="LoginEnter"
+                            Content="Войти в систему"
+                            FontFamily="Tahoma"
+                            Click="LoginEnter_Click"
+                            Style="{StaticResource EnterLogIn}"
+                            Height="35"
+                            Width="160"
+                            Margin="0,20,0,0"
+                            IsDefault="True"/>
+                </StackPanel>
 
-                <TextBlock x:Name="PasswordError" 
-                           Text="Введите пароль" 
-                           FontSize="12" 
-                           Foreground="#ed556a" 
-                           Visibility="Collapsed"
-                           HorizontalAlignment="Left"
-                           Margin="10,0,0,5"
-                           MinHeight="16"/>
-
-                <Button x:Name="LoginEnter"
-                        Content="Войти в систему"
-                        FontFamily="Tahoma"
-                        Click="LoginEnter_Click"
-                        Style="{StaticResource EnterLogIn}"
-                        Height="35"
-                        Width="160"
-                        Margin="0,20,0,0"
-                        IsDefault="True"/>
-            </StackPanel>
-
-            <Button Width="30" Height="30" 
-                    HorizontalAlignment="Right" VerticalAlignment="Top" 
-                    Margin="0,157,10,0"
-                    MouseEnter="Button_MouseEnter"
-                    MouseLeave="Button_MouseLeave"
-                    Style="{StaticResource ShowPass}"
-                    Click="TogglePasswordVisibility"/>
-        </Grid>
+                <Button Width="30" Height="30" 
+                        HorizontalAlignment="Right" VerticalAlignment="Top" 
+                        Margin="0,157,10,0"
+                        MouseEnter="Button_MouseEnter"
+                        MouseLeave="Button_MouseLeave"
+                        Style="{StaticResource ShowPass}"
+                        Click="TogglePasswordVisibility"/>
+            </Grid>
+        </Border>
     </DockPanel>
 </Window>
