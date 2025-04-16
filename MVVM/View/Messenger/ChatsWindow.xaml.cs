@@ -51,25 +51,27 @@ namespace File_Manager.MVVM.View.Messenger
         {
             try
             {
-                _allUsers = await _context.Users
+                var usersFromDb = await _context.Users
                     .Where(u => u.UserId != _currentUser.UserId)
-                    .Select(u => new EmployeeViewModel
-                    {
-                        UserId = u.UserId,
-                        FirstName = u.FirstName,
-                        LastName = u.LastName,
-                        ImagePath = u.ImagePath
-                    }).ToListAsync();
+                    .ToListAsync();
+
+                _allUsers = usersFromDb.Select(u => new EmployeeViewModel
+                {
+                    UserId = u.UserId,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    ImagePath = u.ImagePath
+                }).ToList();
 
                 _chats.Clear();
-                foreach (var user in _allUsers)
+                foreach (var userViewModel in _allUsers)
                 {
                     _chats.Add(new ChatModel
                     {
-                        ChatId = user.UserId,
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
-                        ImagePath = user.ImagePath,
+                        ChatId = userViewModel.UserId,
+                        FirstName = userViewModel.FirstName,
+                        LastName = userViewModel.LastName,
+                        ProfileImage = userViewModel.ProfileImage,
                         Messages = new ObservableCollection<MessageModel>()
                     });
                 }
@@ -396,34 +398,34 @@ namespace File_Manager.MVVM.View.Messenger
         {
             string searchQuery = SearchChatsBox.Text?.ToLower() ?? "";
 
-            var filteredUserModels = _allUsers
+            var filteredUsers = _allUsers
                 .Where(user => (user.FirstName + " " + user.LastName).ToLower().Contains(searchQuery))
-                .Select(u => new ChatModel
-                {
-                    ChatId = u.UserId,
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    ImagePath = u.ImagePath,
-                    Messages = new ObservableCollection<MessageModel>()
-                }).ToList();
+                .ToList();
 
             _chats.Clear();
-            foreach (var userModel in filteredUserModels)
+            foreach (var userViewModel in filteredUsers)
             {
-                _chats.Add(userModel);
+                _chats.Add(new ChatModel
+                {
+                    ChatId = userViewModel.UserId,
+                    FirstName = userViewModel.FirstName,
+                    LastName = userViewModel.LastName,
+                    ProfileImage = userViewModel.ProfileImage,
+                    Messages = new ObservableCollection<MessageModel>()
+                });
             }
 
             if (string.IsNullOrWhiteSpace(searchQuery))
             {
                 _chats.Clear();
-                foreach (var user in _allUsers)
+                foreach (var userViewModel in _allUsers)
                 {
                     _chats.Add(new ChatModel
                     {
-                        ChatId = user.UserId,
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
-                        ImagePath = user.ImagePath,
+                        ChatId = userViewModel.UserId,
+                        FirstName = userViewModel.FirstName,
+                        LastName = userViewModel.LastName,
+                        ProfileImage = userViewModel.ProfileImage,
                         Messages = new ObservableCollection<MessageModel>()
                     });
                 }
