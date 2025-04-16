@@ -1,17 +1,30 @@
 ﻿using File_Manager.Entities;
+using File_Manager.MVVM.Model;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using MimeKit;
 
 namespace File_Manager
 {
     public partial class AddUserWindow : Window
     {
         private readonly IT_DepartmentsContext _context;
+        private readonly EmailSettings _emailSettings;
 
         public AddUserWindow(IT_DepartmentsContext context)
         {
             InitializeComponent();
             _context = context;
+
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("Config/appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
+            _emailSettings = config.GetSection("EmailSettings").Get<EmailSettings>();
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -73,7 +86,29 @@ namespace File_Manager
                 _context.Users.Add(newUser);
                 await _context.SaveChangesAsync();
 
-                MessageBox.Show("Пользователь добавлен успешно!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                try
+                {
+                    var message = new MimeMessage();
+                    message.From.Add(new MailboxAddress(_emailSettings.SenderName, _emailSettings.SenderEmail));
+
+                    message.To.Add(new MailboxAddress($"{firstName} {lastName}", email));
+                    message.Subject = "Добро пожаловать в систему!";
+                    message.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = $"Здравствуйте, {firstName}!\n\nВаши учетные данные:\nИмя пользователя: {username}\nПароль: {password}" };
+
+                    using (var client = new MailKit.Net.Smtp.SmtpClient())
+                    {
+                        client.Connect(_emailSettings.SmtpHost, _emailSettings.SmtpPort, true); // true для SSL
+                        client.Authenticate(_emailSettings.SenderEmail.Split('@')[0], _emailSettings.SenderPassword);
+                        await client.SendAsync(message);
+                        await client.DisconnectAsync(true);
+                        MessageBox.Show("Письмо успешно отправлено!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Пользователь добавлен, но не удалось отправить письмо:\n{ex.Message}", "Ошибка отправки", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+
                 Close();
             }
             else
