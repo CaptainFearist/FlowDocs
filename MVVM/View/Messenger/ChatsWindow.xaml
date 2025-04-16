@@ -114,12 +114,14 @@
                           ItemContainerStyle="{StaticResource CustomListViewItemStyle}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Margin="10">
-                                <Border Width="40" Height="40" CornerRadius="20">
+                            <StackPanel Orientation="Horizontal" 
+                                        Margin="10">
+                                <Border Width="40" Height="40"
+                                        CornerRadius="20">
                                     <Border.Background>
                                         <ImageBrush Stretch="UniformToFill">
                                             <ImageBrush.ImageSource>
-                                                <Binding Path="ImagePath">
+                                                <Binding Path="ProfileImage">
                                                     <Binding.FallbackValue>
                                                         <BitmapImage UriSource="pack://application:,,,/Images/default_user.png"/>
                                                     </Binding.FallbackValue>
@@ -131,7 +133,8 @@
                                         </ImageBrush>
                                     </Border.Background>
                                 </Border>
-                                <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
+                                <StackPanel VerticalAlignment="Center" 
+                                            Margin="10,0,0,0">
                                     <TextBlock Text="{Binding FirstName}"
                                                FontSize="16"
                                                FontWeight="SemiBold"/>
