@@ -11,7 +11,7 @@ namespace File_Manager.MVVM.View.Technician
     {
         private User _currentUser;
         private IT_DepartmentsContext _context;
-        private string _newImagePath;
+        private byte[] _newImageBytes;
 
         public ProfileWindow(User user, IT_DepartmentsContext context)
         {
@@ -42,9 +42,24 @@ namespace File_Manager.MVVM.View.Technician
 
         private void LoadUserProfileImage()
         {
-            if (!string.IsNullOrEmpty(_currentUser.ImagePath))
+            if (_currentUser.ImagePath != null && _currentUser.ImagePath.Length > 0)
             {
-                UserProfileImageBrush.ImageSource = new BitmapImage(new Uri(_currentUser.ImagePath));
+                try
+                {
+                    using (var memoryStream = new System.IO.MemoryStream(_currentUser.ImagePath))
+                    {
+                        BitmapImage bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.StreamSource = memoryStream;
+                        bitmap.EndInit();
+                        UserProfileImageBrush.ImageSource = bitmap;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Не удалось загрузить изображение пользователя: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             else
             {
@@ -65,8 +80,23 @@ namespace File_Manager.MVVM.View.Technician
             openFileDialog.Filter = "Изображения (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg|Все файлы (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
-                _newImagePath = openFileDialog.FileName;
-                UserProfileImageBrush.ImageSource = new BitmapImage(new Uri(_newImagePath));
+                try
+                {
+                    _newImageBytes = System.IO.File.ReadAllBytes(openFileDialog.FileName);
+                    using (var memoryStream = new System.IO.MemoryStream(_newImageBytes))
+                    {
+                        BitmapImage bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.StreamSource = memoryStream;
+                        bitmap.EndInit();
+                        UserProfileImageBrush.ImageSource = bitmap;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при загрузке изображения: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -85,9 +115,9 @@ namespace File_Manager.MVVM.View.Technician
                 _context.Users.Attach(_currentUser);
                 _context.Entry(_currentUser).State = EntityState.Modified;
 
-                if (!string.IsNullOrEmpty(_newImagePath))
+                if (_newImageBytes != null && _newImageBytes.Length > 0)
                 {
-                    _currentUser.ImagePath = _newImagePath;
+                    _currentUser.ImagePath = _newImageBytes;
                     _context.Entry(_currentUser).Property(u => u.ImagePath).IsModified = true;
                 }
 
@@ -115,7 +145,7 @@ namespace File_Manager.MVVM.View.Technician
 
             PasswordBoxVis.Visibility = Visibility.Collapsed;
             PasswordBoxInvis.Visibility = Visibility.Visible;
-            _newImagePath = null;
+            _newImageBytes = null;
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
