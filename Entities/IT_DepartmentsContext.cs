@@ -133,8 +133,7 @@ public partial class IT_DepartmentsContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.ImagePath)
-                .HasMaxLength(255)
-                .IsUnicode(false);
+                .HasColumnType("varbinary(max)");
 
             entity.HasOne(d => d.Department).WithMany(p => p.Users)
                 .HasForeignKey(d => d.DepartmentId)
