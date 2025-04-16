@@ -12,7 +12,7 @@ public partial class User
     public string LastName { get; set; }
     public string Email { get; set; }
     public int DepartmentId { get; set; }
-    public string ImagePath { get; set; }
+    public byte[] ImagePath { get; set; }
 
     public virtual Department Department { get; set; }
     public virtual ICollection<File> Files { get; set; } = new List<File>();
