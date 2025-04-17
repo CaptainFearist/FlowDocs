@@ -101,27 +101,38 @@ namespace File_Manager
 
                 if (FileTypeMappings.TryGetValue(fileExtension, out int fileTypeId))
                 {
-                    var newFile = new Entities.File
+                    try
                     {
-                        FileName = fileName,
-                        FilePath = selectedFilePath,
-                        UploadDate = uploadDate,
-                        FileTypeId = fileTypeId,
-                        UserId = _userId
-                    };
+                        byte[] fileBytes = System.IO.File.ReadAllBytes(selectedFilePath);
+                        long fileSize = fileBytes.Length;
 
-                    _context.Files.Add(newFile);
-                    await _context.SaveChangesAsync();
+                        var newFile = new Entities.File
+                        {
+                            FileName = fileName,
+                            FileContent = fileBytes,
+                            FileSize = fileSize,
+                            UploadDate = uploadDate,
+                            FileTypeId = fileTypeId,
+                            UserId = _userId
+                        };
 
-                    var departmentFile = new DepartmentFile
+                        _context.Files.Add(newFile);
+                        await _context.SaveChangesAsync();
+
+                        var departmentFile = new DepartmentFile
+                        {
+                            DepartmentId = _departmentId,
+                            FileId = newFile.FileId
+                        };
+
+                        _context.DepartmentFiles.Add(departmentFile);
+                        await _context.SaveChangesAsync();
+                        await LoadFilesAsync();
+                    }
+                    catch (Exception ex)
                     {
-                        DepartmentId = _departmentId,
-                        FileId = newFile.FileId
-                    };
-
-                    _context.DepartmentFiles.Add(departmentFile);
-                    await _context.SaveChangesAsync();
-                    await LoadFilesAsync();
+                        MessageBox.Show($"Ошибка при чтении или сохранении файла: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
                 else
                 {
@@ -129,6 +140,7 @@ namespace File_Manager
                 }
             }
         }
+
 
         private async void DeleteFileButton_Click(object sender, RoutedEventArgs e)
         {
@@ -193,30 +205,23 @@ namespace File_Manager
             var file = _context.Files.FirstOrDefault(f => f.FileName == selectedFileInfo.FileName);
             if (file != null)
             {
-                if (System.IO.File.Exists(file.FilePath))
+                var saveFileDialog = new SaveFileDialog
                 {
-                    var saveFileDialog = new SaveFileDialog
-                    {
-                        FileName = selectedFileInfo.FileName,
-                        Filter = "All Files (*.*)|*.*"
-                    };
+                    FileName = selectedFileInfo.FileName,
+                    Filter = "All Files (*.*)|*.*"
+                };
 
-                    if (saveFileDialog.ShowDialog() == true)
-                    {
-                        try
-                        {
-                            System.IO.File.Copy(file.FilePath, saveFileDialog.FileName, true);
-                            MessageBox.Show("Файл успешно сохранен!", "Скачивание", MessageBoxButton.OK, MessageBoxImage.Information);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Ошибка при скачивании файла: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                }
-                else
+                if (saveFileDialog.ShowDialog() == true)
                 {
-                    MessageBox.Show("Файл не найден в системе. Проверьте путь: " + file.FilePath, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    try
+                    {
+                        System.IO.File.WriteAllBytes(saveFileDialog.FileName, file.FileContent);
+                        MessageBox.Show("Файл успешно сохранен!", "Скачивание", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Ошибка при скачивании файла: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
             else
@@ -349,27 +354,38 @@ namespace File_Manager
 
                     if (FileTypeMappings.TryGetValue(fileExtension, out int fileTypeId))
                     {
-                        var newFile = new Entities.File
+                        try
                         {
-                            FileName = fileName,
-                            FilePath = filePath,
-                            UploadDate = uploadDate,
-                            FileTypeId = fileTypeId,
-                            UserId = _userId
-                        };
+                            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+                            long fileSize = fileBytes.Length;
 
-                        _context.Files.Add(newFile);
-                        await _context.SaveChangesAsync();
+                            var newFile = new Entities.File
+                            {
+                                FileName = fileName,
+                                FileContent = fileBytes,
+                                FileSize = fileSize,
+                                UploadDate = uploadDate,
+                                FileTypeId = fileTypeId,
+                                UserId = _userId
+                            };
 
-                        var departmentFile = new DepartmentFile
+                            _context.Files.Add(newFile);
+                            await _context.SaveChangesAsync();
+
+                            var departmentFile = new DepartmentFile
+                            {
+                                DepartmentId = _departmentId,
+                                FileId = newFile.FileId
+                            };
+
+                            _context.DepartmentFiles.Add(departmentFile);
+                            await _context.SaveChangesAsync();
+                            await LoadFilesAsync();
+                        }
+                        catch (Exception ex)
                         {
-                            DepartmentId = _departmentId,
-                            FileId = newFile.FileId
-                        };
-
-                        _context.DepartmentFiles.Add(departmentFile);
-                        await _context.SaveChangesAsync();
-                        await LoadFilesAsync();
+                            MessageBox.Show($"Ошибка при чтении или сохранении файла {fileName}: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                     }
                     else
                     {

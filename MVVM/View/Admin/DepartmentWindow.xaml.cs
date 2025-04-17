@@ -73,16 +73,19 @@ namespace File_Manager
         {
             try
             {
-                var accountingFiles = await _context.DepartmentFiles
+                var departmentFiles = await _context.DepartmentFiles
                     .Where(df => df.DepartmentId == _departmentId)
-                    .Select(df => df.File)
+                    .Include(df => df.File)
                     .ToListAsync();
 
-                FilesListView.ItemsSource = accountingFiles.Select(f => new FileInfoViewModel
-                {
-                    FileName = f.FileName,
-                    UploadDate = f.UploadDate
-                }).ToList();
+                FilesListView.ItemsSource = departmentFiles
+                    .Where(df => df.File != null)
+                    .Select(df => new FileInfoViewModel
+                    {
+                        FileName = df.File?.FileName ?? string.Empty,
+                        UploadDate = df.File.UploadDate.HasValue ? df.File.UploadDate : null // Explicitly check for HasValue
+                    })
+                    .ToList();
             }
             catch (Exception ex)
             {
@@ -107,29 +110,39 @@ namespace File_Manager
 
                 if (FileTypeMappings.TryGetValue(fileExtension, out int fileTypeId))
                 {
-                    // Создание нового файла
-                    var newFile = new Entities.File
+                    try
                     {
-                        FileName = fileName,
-                        FilePath = selectedFilePath,
-                        UploadDate = uploadDate,
-                        FileTypeId = fileTypeId,
-                        UserId = _userId
-                    };
+                        byte[] fileBytes = System.IO.File.ReadAllBytes(selectedFilePath);
+                        long fileSize = fileBytes.Length;
 
-                    _context.Files.Add(newFile);
-                    await _context.SaveChangesAsync();
+                        var newFile = new Entities.File
+                        {
+                            FileName = fileName,
+                            FileContent = fileBytes,
+                            FileSize = fileSize,
+                            UploadDate = uploadDate,
+                            FileTypeId = fileTypeId,
+                            UserId = _userId
+                        };
 
-                    var departmentFile = new DepartmentFile
+                        _context.Files.Add(newFile);
+                        await _context.SaveChangesAsync();
+
+                        var departmentFile = new DepartmentFile
+                        {
+                            DepartmentId = _departmentId,
+                            FileId = newFile.FileId
+                        };
+
+                        _context.DepartmentFiles.Add(departmentFile);
+                        await _context.SaveChangesAsync();
+
+                        await LoadDepartmentFiles();
+                    }
+                    catch (Exception ex)
                     {
-                        DepartmentId = _departmentId,
-                        FileId = newFile.FileId
-                    };
-
-                    _context.DepartmentFiles.Add(departmentFile);
-                    await _context.SaveChangesAsync();
-
-                    LoadDepartmentFiles(); // Обновление списка файлов
+                        MessageBox.Show($"Ошибка при чтении или сохранении файла: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
                 else
                 {
@@ -201,18 +214,12 @@ namespace File_Manager
             }
         }
 
-        private void DownloadFile(FileInfoViewModel selectedFileInfo)
+        private async Task DownloadFile(FileInfoViewModel selectedFileInfo)
         {
-            var file = _context.Files.FirstOrDefault(f => f.FileName == selectedFileInfo.FileName);
+            var file = await _context.Files.FirstOrDefaultAsync(f => f.FileName == selectedFileInfo.FileName);
             if (file == null)
             {
                 MessageBox.Show("Файл не найден в базе данных.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            if (!System.IO.File.Exists(file.FilePath))
-            {
-                MessageBox.Show("Файл не найден в системе. Проверьте путь: " + file.FilePath, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -226,7 +233,7 @@ namespace File_Manager
             {
                 try
                 {
-                    System.IO.File.Copy(file.FilePath, saveFileDialog.FileName, overwrite: true);
+                    System.IO.File.WriteAllBytes(saveFileDialog.FileName, file.FileContent);
                     MessageBox.Show("Файл успешно сохранен!", "Скачивание", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
@@ -321,26 +328,38 @@ namespace File_Manager
 
                     if (FileTypeMappings.TryGetValue(fileExtension, out int fileTypeId))
                     {
-                        var newFile = new Entities.File
+                        try
                         {
-                            FileName = fileName,
-                            FilePath = filePath,
-                            UploadDate = uploadDate,
-                            FileTypeId = fileTypeId,
-                            UserId = _userId
-                        };
+                            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+                            long fileSize = fileBytes.Length;
 
-                        _context.Files.Add(newFile);
-                        await _context.SaveChangesAsync();
+                            var newFile = new Entities.File
+                            {
+                                FileName = fileName,
+                                FileContent = fileBytes,
+                                FileSize = fileSize,
+                                UploadDate = uploadDate,
+                                FileTypeId = fileTypeId,
+                                UserId = _userId
+                            };
 
-                        var departmentFile = new DepartmentFile
+                            _context.Files.Add(newFile);
+                            await _context.SaveChangesAsync();
+
+                            var departmentFile = new DepartmentFile
+                            {
+                                DepartmentId = _departmentId,
+                                FileId = newFile.FileId
+                            };
+
+                            _context.DepartmentFiles.Add(departmentFile);
+                            await _context.SaveChangesAsync();
+                            await LoadDepartmentFiles();
+                        }
+                        catch (Exception ex)
                         {
-                            DepartmentId = _departmentId,
-                            FileId = newFile.FileId
-                        };
-
-                        _context.DepartmentFiles.Add(departmentFile);
-                        await _context.SaveChangesAsync();
+                            MessageBox.Show($"Ошибка при чтении или сохранении файла {fileName}: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                     }
                     else
                     {
