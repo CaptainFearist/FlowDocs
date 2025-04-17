@@ -83,7 +83,7 @@ namespace File_Manager
                     .Select(df => new FileInfoViewModel
                     {
                         FileName = df.File?.FileName ?? string.Empty,
-                        UploadDate = df.File.UploadDate.HasValue ? df.File.UploadDate : null // Explicitly check for HasValue
+                        UploadDate = df.File.UploadDate.HasValue ? df.File.UploadDate : null // Явная проверка наличия значения HasValue
                     })
                     .ToList();
             }
