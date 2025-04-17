@@ -1,11 +1,6 @@
 ﻿using File_Manager.Entities;
 using File_Manager.MVVM.ViewModel;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace File_Manager
 {
@@ -13,22 +8,32 @@ namespace File_Manager
     {
         private readonly IT_DepartmentsContext _context;
         private readonly int _departmentId;
+        private readonly int _userId;
 
-        public FileService(int departmentId)
-        {
+        public FileService(int departmentId, int userId)
+        {
             _departmentId = departmentId;
+            _userId = userId;
             var optionsBuilder = new DbContextOptionsBuilder<IT_DepartmentsContext>();
             optionsBuilder.UseSqlServer("Data Source=HoneyPot\\SQLEXPRESS; " +
-                                            "Initial Catalog=IT_Departments;Integrated Security=True;" +
-                                            "MultipleActiveResultSets=True; TrustServerCertificate=True");
+                            "Initial Catalog=IT_Departments;Integrated Security=True;" +
+                            "MultipleActiveResultSets=True; TrustServerCertificate=True");
             _context = new IT_DepartmentsContext(optionsBuilder.Options);
         }
+
+        public static readonly Dictionary<string, int> FileTypeMappings = new Dictionary<string, int>
+        {
+            { ".doc", 1 }, { ".docx", 1 }, { ".pdf", 1 }, { ".txt", 1 }, { ".rtf", 1 },
+            { ".xls", 1 }, { ".xlsx", 1 }, { ".ppt", 1 }, { ".pptx", 1 },
+            { ".jpg", 2 }, { ".jpeg", 2 }, { ".png", 2 }, { ".gif", 2 },
+            { ".bmp", 2 }, { ".tiff", 2 }, { ".mp4", 3 }
+        };
 
         public async Task<List<FileInfoViewModel>> GetFilesAsync(string searchQuery = "")
         {
             var query = _context.DepartmentFiles
-                .Where(df => df.DepartmentId == _departmentId)
-                .Select(df => df.File);
+              .Where(df => df.DepartmentId == _departmentId)
+              .Select(df => df.File);
 
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
@@ -44,7 +49,7 @@ namespace File_Manager
             }).ToList();
         }
 
-        public async Task AddFileAsync(string filePath, int userId)
+        public async Task AddFileAsync(string filePath)
         {
             var fileName = System.IO.Path.GetFileName(filePath);
             var fileExtension = System.IO.Path.GetExtension(filePath).ToLower();
@@ -52,26 +57,37 @@ namespace File_Manager
 
             if (FileTypeHelper.FileTypeMappings.TryGetValue(fileExtension, out int fileTypeId))
             {
-                var newFile = new Entities.File
+                try
                 {
-                    FileName = fileName,
-                    FilePath = filePath,
-                    UploadDate = uploadDate,
-                    FileTypeId = fileTypeId,
-                    UserId = userId
-                };
+                    byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+                    long fileSize = fileBytes.Length;
 
-                _context.Files.Add(newFile);
-                await _context.SaveChangesAsync();
+                    var newFile = new Entities.File
+                    {
+                        FileName = fileName,
+                        FileContent = fileBytes,
+                        FileSize = fileSize,
+                        UploadDate = uploadDate,
+                        FileTypeId = fileTypeId,
+                        UserId = _userId
+                    };
 
-                var departmentFile = new DepartmentFile
+                    _context.Files.Add(newFile);
+                    await _context.SaveChangesAsync();
+
+                    var departmentFile = new DepartmentFile
+                    {
+                        DepartmentId = _departmentId,
+                        FileId = newFile.FileId
+                    };
+
+                    _context.DepartmentFiles.Add(departmentFile);
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
                 {
-                    DepartmentId = _departmentId,
-                    FileId = newFile.FileId
-                };
-
-                _context.DepartmentFiles.Add(departmentFile);
-                await _context.SaveChangesAsync();
+                    throw new InvalidOperationException($"Ошибка при чтении файла: {ex.Message}");
+                }
             }
             else
             {
@@ -85,7 +101,7 @@ namespace File_Manager
             if (file != null)
             {
                 var departmentFile = await _context.DepartmentFiles
-                    .FirstOrDefaultAsync(df => df.FileId == file.FileId && df.DepartmentId == _departmentId);
+                  .FirstOrDefaultAsync(df => df.FileId == file.FileId && df.DepartmentId == _departmentId);
 
                 if (departmentFile != null)
                 {
@@ -99,6 +115,11 @@ namespace File_Manager
             {
                 throw new InvalidOperationException("Файл не найден");
             }
+        }
+
+        public async Task<Entities.File> DownloadFileAsync(string fileName)
+        {
+            return await _context.Files.FirstOrDefaultAsync(f => f.FileName == fileName);
         }
     }
 }
