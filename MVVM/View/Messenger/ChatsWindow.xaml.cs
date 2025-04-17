@@ -232,7 +232,6 @@ namespace File_Manager.MVVM.View.Messenger
                     {
                         AttachmentId = m.ChatAttachments.First().ChatAttachmentId,
                         FileName = m.ChatAttachments.First().File.FileName,
-                        FilePath = m.ChatAttachments.First().File.FilePath,
                         FileId = m.ChatAttachments.First().File.FileId
                     } : null
                 }).ToList();
@@ -312,18 +311,23 @@ namespace File_Manager.MVVM.View.Messenger
                         }
 
                         int fileTypeIdValue = fileTypeId.Value;
+
+                        byte[] fileBytes = System.IO.File.ReadAllBytes(attachmentViewModel.FilePath);
+                        long fileSize = fileBytes.Length;
+
                         var newFile = await _context.Files.FirstOrDefaultAsync(f =>
-                            f.FilePath == attachmentViewModel.FilePath &&
                             f.FileName == attachmentViewModel.FileName &&
                             f.UserId == _currentUser.UserId &&
-                            f.FileTypeId == fileTypeIdValue);
+                            f.FileTypeId == fileTypeIdValue &&
+                            f.FileContent == fileBytes);
 
                         if (newFile == null)
                         {
                             newFile = new File
                             {
                                 FileName = attachmentViewModel.FileName,
-                                FilePath = attachmentViewModel.FilePath,
+                                FileContent = fileBytes,
+                                FileSize = fileSize,
                                 UploadDate = DateTime.Now,
                                 UserId = _currentUser.UserId,
                                 FileTypeId = fileTypeIdValue
@@ -373,18 +377,36 @@ namespace File_Manager.MVVM.View.Messenger
             }
         }
 
-        private void DownloadFileTextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        private async void DownloadFileTextBlock_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (sender is TextBlock textBlock && textBlock.DataContext is MessageModel message && message.Attachment != null)
             {
-                string filePath = message.Attachment.FilePath;
+                int fileId = message.Attachment.FileId;
+
                 try
                 {
-                    Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                    var fileFromDb = await _context.Files.FindAsync(fileId);
+                    if (fileFromDb != null)
+                    {
+                        SaveFileDialog saveFileDialog = new SaveFileDialog
+                        {
+                            FileName = fileFromDb.FileName
+                        };
+
+                        if (saveFileDialog.ShowDialog() == true)
+                        {
+                            System.IO.File.WriteAllBytes(saveFileDialog.FileName, fileFromDb.FileContent);
+                            Process.Start(new ProcessStartInfo(saveFileDialog.FileName) { UseShellExecute = true });
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Файл не найден в базе данных.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Не удалось открыть файл: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Не удалось загрузить файл: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
