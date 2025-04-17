@@ -39,7 +39,7 @@ namespace File_Manager
 
             InitializeComponent();
             DataContext = ViewModel;
-            LoadFilesAsync();
+            LoadDepartmentFiles();
             _windowResizer = new WindowResizer(this);
         }
 
@@ -81,20 +81,20 @@ namespace File_Manager
             { ".bmp", 2 }, { ".tiff", 2 }, { ".mp4", 3 }
         };
 
-        private async Task LoadFilesAsync()
+        private async Task LoadDepartmentFiles()
         {
             try
             {
-                var files = await _context.DepartmentFiles
+                var developerFiles = await _context.DepartmentFiles
                     .Where(df => df.DepartmentId == _departmentId)
-                    .Select(df => df.File)
+                    .Select(df => new FileInfoViewModel
+                    {
+                        FileName = df.File.FileName,
+                        UploadDate = df.File.UploadDate
+                    })
                     .ToListAsync();
 
-                FilesListView.ItemsSource = files.Select(f => new FileInfoViewModel
-                {
-                    FileName = f.FileName,
-                    UploadDate = f.UploadDate
-                }).ToList();
+                FilesListView.ItemsSource = developerFiles;
             }
             catch (Exception ex)
             {
@@ -144,7 +144,7 @@ namespace File_Manager
 
                         _context.DepartmentFiles.Add(departmentFile);
                         await _context.SaveChangesAsync();
-                        await LoadFilesAsync();
+                        await LoadDepartmentFiles();
                     }
                     catch (Exception ex)
                     {
@@ -191,7 +191,7 @@ namespace File_Manager
 
                     _context.Files.Remove(selectedFile);
                     await _context.SaveChangesAsync();
-                    await LoadFilesAsync();
+                    await LoadDepartmentFiles();
                 }
                 else
                 {
@@ -254,17 +254,15 @@ namespace File_Manager
             {
                 var filteredFiles = await _context.DepartmentFiles
                     .Where(df => df.DepartmentId == _departmentId)
-                    .Select(df => df.File)
-                    .Where(file => file.FileName.ToLower().Contains(searchQuery))
+                    .Where(df => df.File.FileName.ToLower().Contains(searchQuery))
+                    .Select(df => new FileInfoViewModel
+                    {
+                        FileName = df.File.FileName,
+                        UploadDate = df.File.UploadDate
+                    })
                     .ToListAsync();
 
-                var viewModelFiles = filteredFiles.Select(file => new FileInfoViewModel
-                {
-                    FileName = file.FileName,
-                    UploadDate = file.UploadDate
-                }).ToList();
-
-                FilesListView.ItemsSource = viewModelFiles;
+                FilesListView.ItemsSource = filteredFiles;
             }
             catch (Exception ex)
             {
@@ -376,7 +374,7 @@ namespace File_Manager
 
                             _context.DepartmentFiles.Add(departmentFile);
                             await _context.SaveChangesAsync();
-                            await LoadFilesAsync();
+                            await LoadDepartmentFiles();
                         }
                         catch (Exception ex)
                         {

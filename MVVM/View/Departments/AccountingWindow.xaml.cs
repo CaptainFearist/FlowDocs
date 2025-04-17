@@ -236,14 +236,14 @@ namespace File_Manager
             {
                 var accountingFiles = await _context.DepartmentFiles
                     .Where(df => df.DepartmentId == _departmentId)
-                    .Select(df => df.File)
+                    .Select(df => new FileInfoViewModel
+                    {
+                        FileName = df.File.FileName,
+                        UploadDate = df.File.UploadDate
+                    })
                     .ToListAsync();
 
-                FilesListView.ItemsSource = accountingFiles.Select(file => new FileInfoViewModel
-                {
-                    FileName = file.FileName,
-                    UploadDate = file.UploadDate
-                }).ToList();
+                FilesListView.ItemsSource = accountingFiles;
             }
             catch (Exception ex)
             {
@@ -259,17 +259,15 @@ namespace File_Manager
             {
                 var filteredFiles = await _context.DepartmentFiles
                     .Where(df => df.DepartmentId == _departmentId)
-                    .Select(df => df.File)
-                    .Where(file => file.FileName.ToLower().Contains(searchQuery))
+                    .Where(df => df.File.FileName.ToLower().Contains(searchQuery))
+                    .Select(df => new FileInfoViewModel
+                    {
+                        FileName = df.File.FileName,
+                        UploadDate = df.File.UploadDate
+                    })
                     .ToListAsync();
 
-                var viewModelFiles = filteredFiles.Select(file => new FileInfoViewModel
-                {
-                    FileName = file.FileName,
-                    UploadDate = file.UploadDate
-                }).ToList();
-
-                FilesListView.ItemsSource = viewModelFiles;
+                FilesListView.ItemsSource = filteredFiles;
             }
             catch (Exception ex)
             {

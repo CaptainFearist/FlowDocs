@@ -75,17 +75,14 @@ namespace File_Manager
             {
                 var departmentFiles = await _context.DepartmentFiles
                     .Where(df => df.DepartmentId == _departmentId)
-                    .Include(df => df.File)
-                    .ToListAsync();
-
-                FilesListView.ItemsSource = departmentFiles
-                    .Where(df => df.File != null)
                     .Select(df => new FileInfoViewModel
                     {
-                        FileName = df.File?.FileName ?? string.Empty,
-                        UploadDate = df.File.UploadDate.HasValue ? df.File.UploadDate : null // Явная проверка наличия значения HasValue
+                        FileName = df.File.FileName,
+                        UploadDate = df.File.UploadDate
                     })
-                    .ToList();
+                    .ToListAsync();
+
+                FilesListView.ItemsSource = departmentFiles;
             }
             catch (Exception ex)
             {
@@ -252,15 +249,15 @@ namespace File_Manager
             {
                 var filteredFiles = await _context.DepartmentFiles
                     .Where(df => df.DepartmentId == _departmentId)
-                    .Select(df => df.File)
-                    .Where(file => file.FileName.ToLower().Contains(searchQuery))
+                    .Where(df => df.File.FileName.ToLower().Contains(searchQuery))
+                    .Select(df => new FileInfoViewModel
+                    {
+                        FileName = df.File.FileName,
+                        UploadDate = df.File.UploadDate
+                    })
                     .ToListAsync();
 
-                FilesListView.ItemsSource = filteredFiles.Select(file => new FileInfoViewModel
-                {
-                    FileName = file.FileName,
-                    UploadDate = file.UploadDate
-                }).ToList();
+                FilesListView.ItemsSource = filteredFiles;
             }
             catch (Exception ex)
             {
