@@ -79,10 +79,9 @@ public partial class IT_DepartmentsContext : DbContext
                 .IsRequired()
                 .HasMaxLength(255)
                 .IsUnicode(false);
-            entity.Property(e => e.FilePath)
+            entity.Property(e => e.FileContent)
                 .IsRequired()
-                .HasMaxLength(255)
-                .IsUnicode(false);
+                .HasColumnType("varbinary(max)");
             entity.Property(e => e.FileTypeId).HasColumnName("FileTypeID");
             entity.Property(e => e.UploadDate)
                 .HasDefaultValueSql("(getdate())")

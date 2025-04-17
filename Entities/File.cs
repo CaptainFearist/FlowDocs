@@ -9,7 +9,7 @@ public partial class File
 
     public string FileName { get; set; }
 
-    public string FilePath { get; set; }
+    public byte[] FileContent { get; set; }
 
     public long? FileSize { get; set; }
 
