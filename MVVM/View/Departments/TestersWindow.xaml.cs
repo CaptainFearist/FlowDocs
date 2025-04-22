@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using File_Manager.MVVM.View.Messenger;
+using System.Diagnostics;
 
 namespace File_Manager
 {
@@ -276,15 +277,23 @@ namespace File_Manager
 
             if (currentUser != null)
             {
-                ChatsWindow chatsWindow = new ChatsWindow(currentUser);
-                chatsWindow.Show();
+                int userIdToPass = currentUser.UserId;
+                string websiteUrl = $"http://localhost:5500/?userId={userIdToPass}";
+
+                try
+                {
+                    Process.Start(new ProcessStartInfo(websiteUrl) { UseShellExecute = true });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Не удалось открыть браузер: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             else
             {
                 MessageBox.Show("Пользователь не найден.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
 
         private void DeptUsers_Click(object sender, RoutedEventArgs e)
         {

@@ -12,6 +12,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentFormat.OpenXml;
 using System.IO;
 using File_Manager.MVVM.View.Messenger;
+using System.Diagnostics;
 
 namespace File_Manager
 {
@@ -364,8 +365,17 @@ namespace File_Manager
 
             if (currentUser != null)
             {
-                ChatsWindow chatsWindow = new ChatsWindow(currentUser);
-                chatsWindow.Show();
+                int userIdToPass = currentUser.UserId;
+                string websiteUrl = $"http://localhost:5500/?userId={userIdToPass}";
+
+                try
+                {
+                    Process.Start(new ProcessStartInfo(websiteUrl) { UseShellExecute = true });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Не удалось открыть браузер: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             else
             {
