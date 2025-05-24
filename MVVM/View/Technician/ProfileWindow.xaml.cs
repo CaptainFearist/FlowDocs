@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace File_Manager.MVVM.View.Technician
 {
@@ -34,9 +35,9 @@ namespace File_Manager.MVVM.View.Technician
             LoginTextBox.Text = _currentUser.Username;
             EmailTextBox.Text = _currentUser.Email;
 
-            PasswordBoxInvis.Password = _currentUser.Password;
+            PasswordBoxInvis.Password = "";
+            PasswordBoxVis.Text = "";
             PasswordBoxInvis.Visibility = Visibility.Visible;
-            PasswordBoxVis.Text = _currentUser.Password;
             PasswordBoxVis.Visibility = Visibility.Collapsed;
         }
 
@@ -102,23 +103,29 @@ namespace File_Manager.MVVM.View.Technician
 
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            _currentUser.FirstName = FirstNameTextBlock.Text;
-            _currentUser.LastName = LastNameTextBlock.Text;
-            _currentUser.Username = LoginTextBox.Text;
-            _currentUser.Email = EmailTextBox.Text;
+            _currentUser.FirstName = FirstNameTextBlock.Text.Trim();
+            _currentUser.LastName = LastNameTextBlock.Text.Trim();
+            _currentUser.Username = LoginTextBox.Text.Trim();
+            _currentUser.Email = EmailTextBox.Text.Trim();
 
-            string password = PasswordBoxVis.Text;
-            _currentUser.Password = password;
+            string newPassword = PasswordBoxInvis.Password.Trim();
+            if (PasswordBoxVis.Visibility == Visibility.Visible)
+            {
+                newPassword = PasswordBoxVis.Text.Trim();
+            }
+
+            if (!string.IsNullOrEmpty(newPassword))
+            {
+                _currentUser.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            }
 
             try
             {
-                _context.Users.Attach(_currentUser);
-                _context.Entry(_currentUser).State = EntityState.Modified;
+                _context.Users.Update(_currentUser);
 
                 if (_newImageBytes != null && _newImageBytes.Length > 0)
                 {
                     _currentUser.ImagePath = _newImageBytes;
-                    _context.Entry(_currentUser).Property(u => u.ImagePath).IsModified = true;
                 }
 
                 await _context.SaveChangesAsync();
@@ -143,6 +150,8 @@ namespace File_Manager.MVVM.View.Technician
                 StatusTextBlock.Foreground = System.Windows.Media.Brushes.Red;
             }
 
+            PasswordBoxInvis.Password = "";
+            PasswordBoxVis.Text = "";
             PasswordBoxVis.Visibility = Visibility.Collapsed;
             PasswordBoxInvis.Visibility = Visibility.Visible;
             _newImageBytes = null;
@@ -167,19 +176,6 @@ namespace File_Manager.MVVM.View.Technician
                 PasswordBoxInvis.Visibility = Visibility.Visible;
                 PasswordBoxVis.Visibility = Visibility.Collapsed;
             }
-        }
-
-        private void Button_MouseEnter(object sender, MouseEventArgs e)
-        {
-            PasswordBoxVis.Text = PasswordBoxInvis.Password;
-            PasswordBoxVis.Visibility = Visibility.Visible;
-            PasswordBoxInvis.Visibility = Visibility.Collapsed;
-        }
-
-        private void Button_MouseLeave(object sender, MouseEventArgs e)
-        {
-            PasswordBoxVis.Visibility = Visibility.Collapsed;
-            PasswordBoxInvis.Visibility = Visibility.Visible;
         }
     }
 }
