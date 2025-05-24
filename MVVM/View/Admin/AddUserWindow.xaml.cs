@@ -5,6 +5,7 @@ using System.Windows.Input;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using MimeKit;
+using MailKit.Security;
 
 namespace File_Manager
 {
@@ -59,27 +60,29 @@ namespace File_Manager
 
         private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            var firstName = FirstNameTextBox.Text;
-            var lastName = LastNameTextBox.Text;
-            var email = EmailTextBox.Text;
-            var username = UsernameTextBox.Text;
-            var password = PasswordBox.Password;
-            var departmentIdText = DepartmentIdTextBox.Text;
+            var firstName = FirstNameTextBox.Text.Trim();
+            var lastName = LastNameTextBox.Text.Trim();
+            var email = EmailTextBox.Text.Trim();
+            var username = UsernameTextBox.Text.Trim();
+            var plainTextPassword = PasswordBox.Password.Trim();
+            var departmentIdText = DepartmentIdTextBox.Text.Trim();
 
             if (!string.IsNullOrWhiteSpace(firstName) &&
                 !string.IsNullOrWhiteSpace(lastName) &&
                 !string.IsNullOrWhiteSpace(email) &&
                 !string.IsNullOrWhiteSpace(username) &&
-                !string.IsNullOrWhiteSpace(password) &&
+                !string.IsNullOrWhiteSpace(plainTextPassword) &&
                 int.TryParse(departmentIdText, out int departmentId))
             {
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(plainTextPassword);
+
                 var newUser = new User
                 {
                     FirstName = firstName,
                     LastName = lastName,
                     Email = email,
                     Username = username,
-                    Password = password,
+                    Password = hashedPassword,
                     DepartmentId = departmentId
                 };
 
@@ -88,20 +91,35 @@ namespace File_Manager
 
                 try
                 {
+                    if (_emailSettings == null || string.IsNullOrWhiteSpace(_emailSettings.SmtpHost) ||
+                        string.IsNullOrWhiteSpace(_emailSettings.SenderEmail) || string.IsNullOrWhiteSpace(_emailSettings.SenderPassword))
+                    {
+                        MessageBox.Show("Пользователь добавлен, но не удалось отправить письмо: Настройки почты неполны.", "Ошибка отправки", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        Close();
+                        return;
+                    }
+
                     var message = new MimeMessage();
                     message.From.Add(new MailboxAddress(_emailSettings.SenderName, _emailSettings.SenderEmail));
-
                     message.To.Add(new MailboxAddress($"{firstName} {lastName}", email));
                     message.Subject = "Добро пожаловать в систему!";
-                    message.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = $"Здравствуйте, {firstName}!\n\nВаши учетные данные:\nИмя пользователя: {username}\nПароль: {password}" };
+
+                    message.Body = new TextPart(MimeKit.Text.TextFormat.Text)
+                    {
+                        Text = $"Здравствуйте, {firstName}!\n\n" +
+                               $"Ваша учетная запись успешно создана.\n" +
+                               $"Имя пользователя: {username}\n" +
+                               $"Ваш временный пароль: {plainTextPassword}\n\n" +
+                               $"ВНИМАНИЕ: Для вашей безопасности, пожалуйста, ОБЯЗАТЕЛЬНО измените этот пароль СРАЗУ ЖЕ после первого входа в систему."
+                    };
 
                     using (var client = new MailKit.Net.Smtp.SmtpClient())
                     {
-                        client.Connect(_emailSettings.SmtpHost, _emailSettings.SmtpPort, true); // true для SSL
-                        client.Authenticate(_emailSettings.SenderEmail.Split('@')[0], _emailSettings.SenderPassword);
+                        await client.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.SmtpPort, SecureSocketOptions.SslOnConnect);
+                        await client.AuthenticateAsync(_emailSettings.SenderEmail.Split('@')[0], _emailSettings.SenderPassword);
                         await client.SendAsync(message);
                         await client.DisconnectAsync(true);
-                        MessageBox.Show("Письмо успешно отправлено!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("Письмо с учетными данными успешно отправлено!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
                 catch (Exception ex)
