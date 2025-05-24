@@ -143,8 +143,6 @@
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Margin="5,5,-30,5"
-                            MouseEnter="Button_MouseEnter"
-                            MouseLeave="Button_MouseLeave"
                             Style="{StaticResource ShowPass}"
                             Click="TogglePasswordVisibility"/>
                 </Grid>
