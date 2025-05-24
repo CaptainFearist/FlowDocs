@@ -1,4 +1,5 @@
 ﻿using File_Manager.Entities;
+using System;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.EntityFrameworkCore;
@@ -95,11 +96,12 @@ namespace File_Manager
 
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+                var users = await _context.Users.ToListAsync();
+                var user = users.FirstOrDefault(u => u.Username == username);
 
                 if (user != null)
                 {
-                    if (BCrypt.Net.BCrypt.Verify(password, user.Password)) 
+                    if (user.Password == password)
                     {
                         int departmentId = user.DepartmentId;
                         int userId = user.UserId;
@@ -169,6 +171,8 @@ namespace File_Manager
                 MessageBox.Show($"Ошибка при подключении к базе данных: {ex.Message}", "Ошибка подключения", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+
 
         private void ErrorTimer_Tick(object sender, EventArgs e)
         {

@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using System.Windows.Threading;
+using Microsoft.IdentityModel.Tokens;
 
 namespace File_Manager.MVVM.View.Admin
 {
@@ -20,16 +20,8 @@ namespace File_Manager.MVVM.View.Admin
         public UpdateUserProfile(User user, IT_DepartmentsContext context)
         {
             InitializeComponent();
+            _currentUser = user;
             _context = context;
-            _currentUser = _context.Users.Find(user.UserId);
-
-            if (_currentUser == null)
-            {
-                MessageBox.Show("Пользователь не найден в базе данных.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                this.Close();
-                return;
-            }
-
             LoadUserData();
             LoadUserProfileImage();
         }
@@ -46,10 +38,9 @@ namespace File_Manager.MVVM.View.Admin
             LoginTextBox.Text = _currentUser.Username;
             EmailTextBox.Text = _currentUser.Email;
 
-            PasswordBoxInvis.Password = "";
-            PasswordBoxVis.Text = "";
-
+            PasswordBoxInvis.Password = _currentUser.Password;
             PasswordBoxInvis.Visibility = Visibility.Visible;
+            PasswordBoxVis.Text = _currentUser.Password;
             PasswordBoxVis.Visibility = Visibility.Collapsed;
         }
 
@@ -113,41 +104,37 @@ namespace File_Manager.MVVM.View.Admin
             }
         }
 
-        private async void SaveButton_Click(object sender, RoutedEventArgs e)
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            _currentUser.FirstName = FirstNameTextBlock.Text.Trim();
-            _currentUser.LastName = LastNameTextBlock.Text.Trim();
-            _currentUser.Username = LoginTextBox.Text.Trim();
-            _currentUser.Email = EmailTextBox.Text.Trim();
+            _currentUser.FirstName = FirstNameTextBlock.Text;
+            _currentUser.LastName = LastNameTextBlock.Text;
+            _currentUser.Username = LoginTextBox.Text;
+            _currentUser.Email = EmailTextBox.Text;
 
-            string enteredPassword = PasswordBoxInvis.Password.Trim();
-            if (PasswordBoxVis.Visibility == Visibility.Visible)
-            {
-                enteredPassword = PasswordBoxVis.Text.Trim();
-            }
-
-            if (!string.IsNullOrEmpty(enteredPassword))
-            {
-                _currentUser.Password = BCrypt.Net.BCrypt.HashPassword(enteredPassword);
-            }
+            string password = PasswordBoxVis.Text;
+            _currentUser.Password = password;
 
             try
             {
+                _context.Users.Attach(_currentUser);
                 _context.Entry(_currentUser).State = EntityState.Modified;
 
                 if (_newImageBytes != null && _newImageBytes.Length > 0)
                 {
                     _currentUser.ImagePath = _newImageBytes;
+                    _context.Entry(_currentUser).Property(u => u.ImagePath).IsModified = true;
                 }
 
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
 
                 StatusTextBlock.Text = "Изменения сохранены.";
                 StatusTextBlock.Visibility = Visibility.Visible;
                 StatusTextBlock.Foreground = System.Windows.Media.Brushes.Green;
 
-                await Task.Delay(3000);
-                Dispatcher.Invoke(() => this.DialogResult = true);
+                Task.Delay(3000).ContinueWith(_ =>
+                {
+                    Dispatcher.Invoke(() => this.DialogResult = true);
+                });
             }
             catch (DbUpdateException ex)
             {
@@ -162,8 +149,6 @@ namespace File_Manager.MVVM.View.Admin
                 StatusTextBlock.Foreground = System.Windows.Media.Brushes.Red;
             }
 
-            PasswordBoxInvis.Password = "";
-            PasswordBoxVis.Text = "";
             PasswordBoxVis.Visibility = Visibility.Collapsed;
             PasswordBoxInvis.Visibility = Visibility.Visible;
             _newImageBytes = null;
@@ -188,6 +173,19 @@ namespace File_Manager.MVVM.View.Admin
                 PasswordBoxInvis.Visibility = Visibility.Visible;
                 PasswordBoxVis.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private void Button_MouseEnter(object sender, MouseEventArgs e)
+        {
+            PasswordBoxVis.Text = PasswordBoxInvis.Password;
+            PasswordBoxVis.Visibility = Visibility.Visible;
+            PasswordBoxInvis.Visibility = Visibility.Collapsed;
+        }
+
+        private void Button_MouseLeave(object sender, MouseEventArgs e)
+        {
+            PasswordBoxVis.Visibility = Visibility.Collapsed;
+            PasswordBoxInvis.Visibility = Visibility.Visible;
         }
     }
 }

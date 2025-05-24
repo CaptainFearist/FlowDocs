@@ -5,7 +5,6 @@ using System.Windows.Input;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using MimeKit;
-using Microsoft.EntityFrameworkCore;
 
 namespace File_Manager
 {
@@ -26,11 +25,6 @@ namespace File_Manager
                 .Build();
 
             _emailSettings = config.GetSection("EmailSettings").Get<EmailSettings>();
-
-            if (_emailSettings == null)
-            {
-                MessageBox.Show("Настройки электронной почты не загружены. Отправка писем может быть недоступна.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -65,12 +59,12 @@ namespace File_Manager
 
         private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            var firstName = FirstNameTextBox.Text.Trim();
-            var lastName = LastNameTextBox.Text.Trim();
-            var email = EmailTextBox.Text.Trim();
-            var username = UsernameTextBox.Text.Trim();
-            var password = PasswordBox.Password.Trim();
-            var departmentIdText = DepartmentIdTextBox.Text.Trim();
+            var firstName = FirstNameTextBox.Text;
+            var lastName = LastNameTextBox.Text;
+            var email = EmailTextBox.Text;
+            var username = UsernameTextBox.Text;
+            var password = PasswordBox.Password;
+            var departmentIdText = DepartmentIdTextBox.Text;
 
             if (!string.IsNullOrWhiteSpace(firstName) &&
                 !string.IsNullOrWhiteSpace(lastName) &&
@@ -79,85 +73,47 @@ namespace File_Manager
                 !string.IsNullOrWhiteSpace(password) &&
                 int.TryParse(departmentIdText, out int departmentId))
             {
-                if (await _context.Users.AnyAsync(u => u.Username == username || u.Email == email))
-                {
-                    MessageBox.Show("Пользователь с таким именем пользователя или email уже существует.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
-
                 var newUser = new User
                 {
                     FirstName = firstName,
                     LastName = lastName,
                     Email = email,
                     Username = username,
-                    Password = hashedPassword,
+                    Password = password,
                     DepartmentId = departmentId
                 };
 
+                _context.Users.Add(newUser);
+                await _context.SaveChangesAsync();
+
                 try
                 {
-                    _context.Users.Add(newUser);
-                    await _context.SaveChangesAsync();
+                    var message = new MimeMessage();
+                    message.From.Add(new MailboxAddress(_emailSettings.SenderName, _emailSettings.SenderEmail));
 
-                    MessageBox.Show("Пользователь успешно добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    message.To.Add(new MailboxAddress($"{firstName} {lastName}", email));
+                    message.Subject = "Добро пожаловать в систему!";
+                    message.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = $"Здравствуйте, {firstName}!\n\nВаши учетные данные:\nИмя пользователя: {username}\nПароль: {password}" };
 
-                    if (_emailSettings != null && !string.IsNullOrWhiteSpace(_emailSettings.SmtpHost) &&
-                        !string.IsNullOrWhiteSpace(_emailSettings.SenderEmail) &&
-                        !string.IsNullOrWhiteSpace(_emailSettings.SenderPassword))
+                    using (var client = new MailKit.Net.Smtp.SmtpClient())
                     {
-                        try
-                        {
-                            var message = new MimeMessage();
-                            message.From.Add(new MailboxAddress(_emailSettings.SenderName, _emailSettings.SenderEmail));
-                            message.To.Add(new MailboxAddress($"{firstName} {lastName}", email));
-                            message.Subject = "Добро пожаловать в систему!";
-
-                            message.Body = new TextPart(MimeKit.Text.TextFormat.Text)
-                            {
-                                Text = $"Здравствуйте, {firstName}!\n\n" +
-                                       $"Ваша учетная запись успешно создана.\n" +
-                                       $"Имя пользователя: {username}\n" +
-                                       $"Ваш временный пароль: {password}\n\n" +
-                                       $"ВНИМАНИЕ: Для вашей безопасности, пожалуйста, ОБЯЗАТЕЛЬНО измените этот пароль СРАЗУ ЖЕ после первого входа в систему."
-                            };
-
-                            using (var client = new MailKit.Net.Smtp.SmtpClient())
-                            {
-                                await client.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.SmtpPort, MailKit.Security.SecureSocketOptions.SslOnConnect);
-                                await client.AuthenticateAsync(_emailSettings.SenderEmail.Split('@')[0], _emailSettings.SenderPassword);
-                                await client.SendAsync(message);
-                                await client.DisconnectAsync(true);
-                                MessageBox.Show("Письмо с учетными данными успешно отправлено!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Пользователь добавлен, но не удалось отправить письмо:\n{ex.Message}", "Ошибка отправки", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
+                        client.Connect(_emailSettings.SmtpHost, _emailSettings.SmtpPort, true); // true для SSL
+                        client.Authenticate(_emailSettings.SenderEmail.Split('@')[0], _emailSettings.SenderPassword);
+                        await client.SendAsync(message);
+                        await client.DisconnectAsync(true);
+                        MessageBox.Show("Письмо успешно отправлено!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
-                    else
-                    {
-                        MessageBox.Show("Пользователь добавлен, но настройки электронной почты отсутствуют или неполны. Письмо не отправлено.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
-
-                    this.DialogResult = true;
-                    Close();
-                }
-                catch (Microsoft.EntityFrameworkCore.DbUpdateException dbEx)
-                {
-                    MessageBox.Show($"Ошибка при добавлении пользователя: {dbEx.Message}\nВнутренняя ошибка: {dbEx.InnerException?.Message}", "Ошибка базы данных", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Произошла непредвиденная ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Пользователь добавлен, но не удалось отправить письмо:\n{ex.Message}", "Ошибка отправки", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
+
+                Close();
             }
             else
             {
-                MessageBox.Show("Пожалуйста, заполните все обязательные поля корректными данными.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Пожалуйста, заполните все поля.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
     }
