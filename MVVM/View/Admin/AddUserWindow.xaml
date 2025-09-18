@@ -71,11 +71,13 @@
                     <PasswordBox x:Name="PasswordBox" 
                                  Margin="0,0,0,10"
                                  Style="{StaticResource TextPassp}"/>
-                    <TextBlock Text="ID Отдела:" 
-                               FontFamily="Tahoma"/>
-                    <TextBox x:Name="DepartmentIdTextBox" 
-                             Margin="0,0,0,10"
-                             Style="{StaticResource TextPass}"/>
+                    <TextBlock Text="Отдел:" FontFamily="Tahoma"/>
+                    <ComboBox x:Name="DepartmentComboBox"
+          Margin="0,0,0,10"
+          Style="{StaticResource ComboPass}"
+          ItemContainerStyle="{StaticResource ComboPassItem}"
+          DisplayMemberPath="DepartmentName"
+          SelectedValuePath="DepartmentId"/>
                     <Button Content="Добавить" 
                             FontFamily="Tahoma"
                             Width="110" 
