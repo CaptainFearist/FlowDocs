@@ -31,6 +31,7 @@
                 <ResourceDictionary Source="Themes/Messenger/AttachFileButtonStyle.xaml"/>
                 <ResourceDictionary Source="Themes/Messenger/AttachedFileItemStyle.xaml"/>
                 <ResourceDictionary Source="Themes/Messenger/RoundedDeleteButtonStyle.xaml"/>
+                <ResourceDictionary Source="Themes/ComboPass.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
