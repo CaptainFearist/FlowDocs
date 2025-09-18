@@ -26,6 +26,20 @@ namespace File_Manager
                 .Build();
 
             _emailSettings = config.GetSection("EmailSettings").Get<EmailSettings>();
+
+            LoadDepartments();
+        }
+
+        private void LoadDepartments()
+        {
+            var departments = _context.Departments.ToList();
+            var departmentsList = new List<object>();
+
+            departmentsList.Add(new { DepartmentId = (int?)null, DepartmentName = "--- Выберите отдел ---" });
+            departmentsList.AddRange(departments.Select(d => new { DepartmentId = (int?)d.DepartmentId, DepartmentName = d.DepartmentName }));
+
+            DepartmentComboBox.ItemsSource = departmentsList;
+            DepartmentComboBox.SelectedIndex = 0;
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -65,14 +79,14 @@ namespace File_Manager
             var email = EmailTextBox.Text.Trim();
             var username = UsernameTextBox.Text.Trim();
             var plainTextPassword = PasswordBox.Password.Trim();
-            var departmentIdText = DepartmentIdTextBox.Text.Trim();
+            var selectedDepartmentId = (int?)DepartmentComboBox.SelectedValue;
 
             if (!string.IsNullOrWhiteSpace(firstName) &&
                 !string.IsNullOrWhiteSpace(lastName) &&
                 !string.IsNullOrWhiteSpace(email) &&
                 !string.IsNullOrWhiteSpace(username) &&
                 !string.IsNullOrWhiteSpace(plainTextPassword) &&
-                int.TryParse(departmentIdText, out int departmentId))
+                selectedDepartmentId.HasValue)
             {
                 string hashedPassword = BCrypt.Net.BCrypt.HashPassword(plainTextPassword);
 
@@ -83,7 +97,7 @@ namespace File_Manager
                     Email = email,
                     Username = username,
                     Password = hashedPassword,
-                    DepartmentId = departmentId
+                    DepartmentId = selectedDepartmentId.Value
                 };
 
                 _context.Users.Add(newUser);
